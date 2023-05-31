@@ -1,9 +1,19 @@
+import 'dart:developer' as dev;
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:uangku_pencatat_keuangan/Model/account.dart';
+import 'package:uangku_pencatat_keuangan/login.dart';
+
+import 'emailVer.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key key}) : super(key: key);
@@ -13,15 +23,15 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  TextEditingController UsernameController = new TextEditingController();
+  TextEditingController EmailController = new TextEditingController();
   TextEditingController PasswordController = new TextEditingController();
   TextEditingController ConfirmPasswordController = new TextEditingController();
-  String _username = "", _password = "";
+  String _Email = "", _password = "";
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    UsernameController.dispose();
+    EmailController.dispose();
     PasswordController.dispose();
     ConfirmPasswordController.dispose();
     super.dispose();
@@ -87,7 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text("Username",
+                                      Text("Email",
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontFamily: "Inter")),
@@ -98,10 +108,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                         child: TextFormField(
                                             validator: (value) {
                                               if (value.isEmpty) {
-                                                return "Please enter username.";
+                                                return "Please enter Email.";
                                               }
                                             },
-                                            controller: UsernameController,
+                                            controller: EmailController,
                                             decoration: InputDecoration(
                                               border: OutlineInputBorder(
                                                   borderRadius:
@@ -196,10 +206,47 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void Registered() {
+    final db = FirebaseFirestore.instance;
+
     if (_formKey.currentState.validate()) {
-      _username = UsernameController.text;
+      _Email = EmailController.text;
       _password = PasswordController.text;
-      Fluttertoast.showToast(msg: "data: " + _username + " & " + _password);
+
+      _verificationEmail({email}) {
+        FirebaseAuth.instance.currentUser?.sendEmailVerification();
+
+        var isEmailVerified = FirebaseAuth.instance.currentUser.emailVerified;
+
+        if (isEmailVerified) {
+          Fluttertoast.showToast(msg: "Email berhasil diVerifikasi");
+        }
+      }
+
+      _signUpFirebase({email, password}) async {
+        try {
+          UserCredential userCredential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: email, password: password)
+              .then((value) {
+            Fluttertoast.showToast(msg: "Akun berhasil dibuat");
+            Navigator.pop(
+                context, MaterialPageRoute(builder: (context) => login_page()));
+            print("LOG:" + value.user.toString());
+          });
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'weak-password') {
+            Fluttertoast.showToast(msg: "Error: Password minimal 6 huruf.");
+          }
+          if (e.code == 'email-already-in-use') {
+            Fluttertoast.showToast(msg: "Error: Email telah digunakan.");
+          }
+          if (e.code == 'invalid-email') {
+            Fluttertoast.showToast(msg: 'Error: Email tidak valid.');
+          }
+        }
+      }
+
+      _signUpFirebase(
+          email: EmailController.text, password: PasswordController.text);
     }
   }
 }
