@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uangku_pencatat_keuangan/Model/account.dart';
+import 'package:uangku_pencatat_keuangan/Model/record.dart';
 import 'package:uangku_pencatat_keuangan/login.dart';
 
 import 'form_money.dart';
@@ -17,6 +19,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   int Saldo = 0;
   TabController? _tabcontroller;
+
+  FirebaseFirestore? firestore;
 
   @override
   void initState() {
@@ -33,25 +37,29 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     //debuging database
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    firestore = FirebaseFirestore.instance;
 
     if (FirebaseAuth.instance.currentUser != null) {
-      firestore
-          .collection("financial_records")
-          .doc(FirebaseAuth.instance.currentUser!.uid.toString()) //39
-          .update({
-        'records': FieldValue.arrayUnion([
-          {
-            'jumlah': 20000,
-            'catatan': '-',
-            'kategori': 'transportasi',
-            'tanggal': new DateTime.timestamp().toString()
-          }
-        ])
-      }).then((value) {
-        Fluttertoast.showToast(msg: "Database berhasil dibuat.");
-      });
+      // firestore
+      //     .collection("financial_records")
+      //     .doc(FirebaseAuth.instance.currentUser!.uid.toString()) //39
+      //     .update({
+      //   'records': FieldValue.arrayUnion([
+      //     {
+      //       'jumlah': 20000,
+      //       'catatan': '-',
+      //       'kategori': 'transportasi',
+      //       'tanggal': new DateTime.timestamp().toString()
+      //     }
+      //   ])
+      // }).then((value) {
+      //   Fluttertoast.showToast(msg: "Database berhasil dibuat.");
+      // });
     }
+
+    //get data from Firestore
+    getDataFromDatabase();
+
     List namaPemasukan = [
       'data1',
       'data2',
@@ -276,5 +284,50 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                 ),
               ],
             )));
+  }
+
+  getDataFromDatabase() async {
+    // StreamBuilder(
+    //     stream: firestore!
+    //         .collection("financial_records")
+    //         .doc(FirebaseAuth.instance.currentUser!.uid)
+    //         .snapshots(),
+    //     builder:
+    //         (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+    //       if (snapshot.hasError) {
+    //         print("ERROR: ${snapshot.error}");
+    //       }
+
+    //       if (snapshot.hasData && snapshot.data!.exists) {
+    //         Map<String, dynamic> data =
+    //             snapshot.data!.data() as Map<String, dynamic>;
+    //         print("LOG: $data");
+    //       }
+
+    //       return Container();
+    //     });
+
+    //error parshing json data from database
+    List<Record> financialRecords = [];
+
+    DocumentReference ref = firestore!
+        .collection('financial_records')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
+
+    await ref.get().then((DocumentSnapshot snapshot) {
+      if (snapshot.exists) {
+        Map<String, dynamic> financialRecordData =
+            snapshot.data() as Map<String, dynamic>;
+        print("LOG: ${financialRecordData['records']}");
+
+        // List<Map<String, dynamic>> records =
+        //     financialRecordData["records"] as List<Map<String, dynamic>>;
+
+        // for (var record in records) {
+        //   Record financialRecord = Record.fromJson(record);
+        //   financialRecords.add(financialRecord);
+        // }
+      }
+    });
   }
 }
