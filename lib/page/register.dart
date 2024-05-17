@@ -10,10 +10,10 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:uangku_pencatat_keuangan/Model/account.dart';
-import 'package:uangku_pencatat_keuangan/login.dart';
+import 'package:uangku_pencatat_keuangan/model/account.dart';
+import 'package:uangku_pencatat_keuangan/page/login.dart';
 
-import 'emailVer.dart';
+import '../backend/email_ver.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);

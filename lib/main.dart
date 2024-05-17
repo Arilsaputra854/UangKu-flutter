@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:uangku_pencatat_keuangan/custom_colors.dart';
 import 'package:uangku_pencatat_keuangan/firebase_options.dart';
-import 'package:uangku_pencatat_keuangan/splash_screen.dart';
+import 'package:uangku_pencatat_keuangan/page/splash_screen.dart';
+import 'package:uangku_pencatat_keuangan/util/util.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       title: 'Uangku',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          primaryColor: custom_colors.Yellow,
+          primaryColor: CustomColor.Yellow,
           appBarTheme: AppBarTheme(color: Colors.white)),
       home: Splashscreen(),
     );

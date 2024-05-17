@@ -9,9 +9,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uangku_pencatat_keuangan/emailVer.dart';
-import 'package:uangku_pencatat_keuangan/home.dart';
-import 'package:uangku_pencatat_keuangan/register.dart';
+import 'package:uangku_pencatat_keuangan/backend/email_ver.dart';
+import 'package:uangku_pencatat_keuangan/page/home.dart';
+import 'package:uangku_pencatat_keuangan/page/register.dart';
 
 class login_page extends StatefulWidget {
   const login_page({Key? key}) : super(key: key);
@@ -45,10 +45,8 @@ class _login_pageState extends State<login_page> {
     print("LOG: UKURAN LAYAR ${screenWidth}");
 
     if (screenWidth > 700) {
-      print("LOG: DESKTOP LAYOUT!");
       return usingDesktopLayout(screenWidth);
     } else {
-      print("LOG: MOBILE LAYOUT!");
       return usingMobileLayout();
     }
   }
@@ -69,6 +67,8 @@ class _login_pageState extends State<login_page> {
                     builder: ((context) => EmailVerificationScreen())));
           } else {
             Fluttertoast.showToast(msg: "Login Berhasil");
+
+            print("LOG : ${FirebaseAuth.instance.currentUser!.uid}");
 
             saveUserToken(FirebaseAuth.instance.currentUser!.uid);
 

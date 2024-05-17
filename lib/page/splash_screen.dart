@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:uangku_pencatat_keuangan/home.dart';
-import 'package:uangku_pencatat_keuangan/login.dart';
+import 'package:uangku_pencatat_keuangan/page/home.dart';
+import 'package:uangku_pencatat_keuangan/page/login.dart';
 
 class Splashscreen extends StatelessWidget {
   const Splashscreen({Key? key}) : super(key: key);
