@@ -19,3 +19,9 @@ String konversiKeIDR(String amount) {
 
   return formattedAmount;
 }
+
+String konversiTimestamp(String timestamp) {
+  String formattedDateTime = DateFormat('dd-MM-yyyy HH:mm')
+      .format(DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp)));
+  return formattedDateTime;
+}

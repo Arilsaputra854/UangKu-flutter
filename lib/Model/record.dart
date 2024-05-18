@@ -124,7 +124,6 @@ Future<List<Record>> getRecordFromDatabase(int type) async {
       return [];
     }
   } catch (e) {
-    print("Error: $e");
     return [];
   }
 }

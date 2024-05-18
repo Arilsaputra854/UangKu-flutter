@@ -20,12 +20,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
-  int Saldo = 0;
   TabController? _tabcontroller;
 
   FirebaseFirestore? firestore;
-
-  List<Record> financial_records = [];
 
   @override
   void initState() {
@@ -72,13 +69,25 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                                     fontFamily: "Inter",
                                     fontSize: 20),
                               ),
-                              Text(
-                                "Rp ${Saldo}",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: "Inter",
-                                    fontSize: 40),
-                              )
+                              FutureBuilder(
+                                  future: getJumlahTotal(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data ?? "0",
+                                        style: TextStyle(
+                                            color: const Color.fromARGB(
+                                                255, 25, 13, 13),
+                                            fontFamily: "Inter",
+                                            fontSize: 40),
+                                      );
+                                    } else if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    } else {
+                                      return Text("Terjadi Kesalahan");
+                                    }
+                                  })
                             ]),
                       ),
                       Container(
@@ -159,14 +168,17 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
         InkWell(
             hoverColor: Colors.transparent,
             onTap: () async {
-              bool result = await Navigator.push(context,
+              bool result = false;
+              result = await Navigator.push(context,
                   MaterialPageRoute(builder: (context) {
-                return FormMoneyScreen(1);
+                return FormMoneyScreen(Type.TYPE_PEMASUKAN);
               }));
-              if (result != null) {
+              try {
                 if (result) {
                   setState(() {});
                 }
+              } catch (e) {
+                print("Canceled");
               }
             },
             child: Container(
@@ -181,14 +193,17 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
         InkWell(
             hoverColor: Colors.transparent,
             onTap: () async {
-              bool result = await Navigator.push(context,
-                  MaterialPageRoute(builder: (context) {
-                return FormMoneyScreen(0);
-              }));
-              if (result != null) {
+              try {
+                bool result = false;
+                result = await Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                  return FormMoneyScreen(Type.TYPE_PENGELUARAN);
+                }));
                 if (result) {
                   setState(() {});
                 }
+              } catch (e) {
+                print("Canceled");
               }
             },
             child: Container(
@@ -202,9 +217,7 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
             )),
         InkWell(
             hoverColor: Colors.transparent,
-            onTap: () {
-              Fluttertoast.showToast(msg: "Graphic");
-            },
+            onTap: () async {},
             child: Container(
               margin: EdgeInsets.all(10),
               width: 80,
@@ -249,7 +262,10 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                           children: [
                             Row(
                               children: [
-                                Text(snapshot.data![index].jumlah.toString()),
+                                Text(
+                                  konversiKeIDR(snapshot.data![index].jumlah),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                                 Spacer(),
                                 Text(snapshot.data![index].tanggal.toString())
                               ],
@@ -262,13 +278,13 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                     }),
                   );
                 } else {
-                  return Text("Tidak ada data");
+                  return Center(child: Text("Tidak ada data"));
                 }
               } else {
-                return Text("Tidak ada data");
+                return Center(child: Text("Tidak ada data"));
               }
             }))
-        : Text("Login terlebidahulu.");
+        : Center(child: Text("Gagal mengambil data. silakan login!"));
   }
 
   _tabPemasukan() {
@@ -277,7 +293,6 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
             future: getRecordFromDatabase(Type.TYPE_PEMASUKAN),
             builder:
                 ((BuildContext context, AsyncSnapshot<List<Record>> snapshot) {
-              //loading data
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
                   child: SizedBox(
@@ -289,33 +304,64 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               } else if (snapshot.hasData) {
-                return ListView.builder(
-                  itemCount: snapshot.data?.length,
-                  itemBuilder: ((context, index) {
-                    return Container(
-                      margin: EdgeInsets.only(
-                          left: 5, right: 5, top: 10, bottom: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(snapshot.data![index].jumlah.toString()),
-                              Spacer(),
-                              Text(snapshot.data![index].tanggal.toString())
-                            ],
-                          ),
-                          Text(snapshot.data![index].kategori),
-                          Text(snapshot.data![index].catatan)
-                        ],
-                      ),
-                    );
-                  }),
-                );
+                if (!snapshot.data!.isEmpty) {
+                  //loading data
+                  return ListView.builder(
+                    itemCount: snapshot.data?.length,
+                    itemBuilder: ((context, index) {
+                      return Container(
+                        margin: EdgeInsets.only(
+                            left: 5, right: 5, top: 10, bottom: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  konversiKeIDR(snapshot.data![index].jumlah),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Spacer(),
+                                Text(konversiTimestamp(
+                                    snapshot.data![index].tanggal.toString()))
+                              ],
+                            ),
+                            Text(snapshot.data![index].kategori),
+                            Text(snapshot.data![index].catatan)
+                          ],
+                        ),
+                      );
+                    }),
+                  );
+                } else {
+                  return Center(child: Text("Tidak ada data"));
+                }
               } else {
-                return Text("Tidak ada data");
+                return Center(child: Text("Tidak ada data"));
               }
             }))
-        : Text("Login terlebidahulu.");
+        : Center(child: Text("Gagal mengambil data. silakan login!"));
   }
+}
+
+Future<String> getJumlahTotal() async {
+  int total = 0;
+  int totalPemasukan = 0;
+  int totalPengeluaran = 0;
+  List<Record> pemasukanRecords =
+      await getRecordFromDatabase(Type.TYPE_PEMASUKAN);
+  List<Record> pengeluaranRecords =
+      await getRecordFromDatabase(Type.TYPE_PENGELUARAN);
+
+  for (Record record in pemasukanRecords) {
+    totalPemasukan = totalPemasukan + int.parse(record.jumlah);
+  }
+
+  for (Record record in pengeluaranRecords) {
+    totalPengeluaran = totalPengeluaran + int.parse(record.jumlah);
+  }
+
+  total = totalPemasukan - totalPengeluaran;
+
+  return konversiKeIDR(total.toString());
 }
