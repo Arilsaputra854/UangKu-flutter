@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:uangku_pencatat_keuangan/Model/record.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 
@@ -20,8 +21,8 @@ class FormMoneyScreen extends StatefulWidget {
 
 class _FormMoneyScreenState extends State<FormMoneyScreen> {
   late TextEditingController jumlahController, catatanController;
+  String kalendarInput = "";
   final _formKey = GlobalKey<FormState>();
-
   @override
   void initState() {
     jumlahController = new TextEditingController();
@@ -135,28 +136,45 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
                   SizedBox(
                     height: 20,
                   ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Column(children: [
-                      Text("Tanggal",
-                          style: TextStyle(fontSize: 20, fontFamily: "Inter")),
+                  Row(
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Column(children: [
+                          Text("Tanggal",
+                              style:
+                                  TextStyle(fontSize: 20, fontFamily: "Inter")),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          TextButton(
+                            child: Icon(
+                              Icons.calendar_month,
+                              size: 45,
+                              color: Colors.black,
+                            ),
+                            style: TextButton.styleFrom(
+                                backgroundColor: Colors.yellow,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)))),
+                            onPressed: () async {
+                              kalendarInput = await openCalendar();
+                              setState(() {});
+                            },
+                          ),
+                        ]),
+                      ),
                       SizedBox(
-                        height: 5,
+                        width: 10,
                       ),
-                      TextButton(
-                        child: Icon(
-                          Icons.calendar_month,
-                          size: 45,
-                          color: Colors.black,
-                        ),
-                        style: TextButton.styleFrom(
-                            backgroundColor: Colors.yellow,
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)))),
-                        onPressed: () {},
-                      ),
-                    ]),
+                      Text(
+                        konversiTimestamp(kalendarInput.isNotEmpty
+                            ? kalendarInput
+                            : DateTime.now().millisecondsSinceEpoch.toString()),
+                        style: TextStyle(fontSize: 20, fontFamily: "Inter"),
+                      )
+                    ],
                   ),
                   SizedBox(
                     height: 20,
@@ -231,19 +249,88 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
   }
 
   simpanData(int type) async {
-    Timestamp currentTimeStamp = Timestamp.now();
-    Record record = Record(
-        catatan: catatanController.text ?? "-",
-        jumlah: jumlahController.text,
-        kategori: "kategori test",
-        tanggal: currentTimeStamp.millisecondsSinceEpoch.toString());
-    bool result = await saveRecordToDatabase(type, record);
-    if (result) {
-      Fluttertoast.showToast(msg: "Catatan berhasil ditambahkan");
-      Navigator.pop(context, result);
+    if (jumlahController.text.isNotEmpty) {
+      Record record = Record(
+          catatan:
+              catatanController.text.isNotEmpty ? catatanController.text : "-",
+          jumlah: jumlahController.text,
+          kategori: "kategori test",
+          tanggal: kalendarInput.isNotEmpty
+              ? kalendarInput
+              : DateTime.now().millisecondsSinceEpoch.toString());
+      bool result = await saveRecordToDatabase(type, record);
+      if (result) {
+        Fluttertoast.showToast(msg: "Catatan berhasil ditambahkan");
+        Navigator.pop(context, result);
+      } else {
+        Fluttertoast.showToast(msg: "Gagal menyimpan data");
+      }
     } else {
-      Fluttertoast.showToast(msg: "Gagal menyimpan data");
+      Fluttertoast.showToast(msg: "Jumlah tidak boleh kosong!");
     }
+  }
+
+  Future<String> openCalendar() async {
+    DateTime _selectedDay = DateTime.now();
+    DateTime _focusedDay = DateTime.now();
+
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                  actions: [
+                    ElevatedButton(
+                        onPressed: () {
+                          DateTime now = DateTime.now();
+                          int hour = now.hour;
+                          int minute = now.minute;
+                          int second = now.second;
+
+                          DateTime formatedDate = DateTime(
+                              _selectedDay.year,
+                              _selectedDay.month,
+                              _selectedDay.day,
+                              hour,
+                              minute,
+                              second);
+
+                          String timestamp =
+                              formatedDate.millisecondsSinceEpoch.toString();
+                          Navigator.pop(context, timestamp);
+                          ;
+                        },
+                        child: Text("Oke"))
+                  ],
+                  content: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      child: TableCalendar(
+                          onPageChanged: (focusedDay) {
+                            setState(() {
+                              _focusedDay = focusedDay;
+                            });
+                          },
+                          selectedDayPredicate: (day) {
+                            return isSameDay(day, _selectedDay);
+                          },
+                          onDaySelected: (selectedDay, focusedDay) {
+                            setState(() {
+                              _selectedDay = selectedDay;
+                              _focusedDay = focusedDay;
+                            });
+                          },
+                          calendarFormat: CalendarFormat.month,
+                          availableCalendarFormats: {
+                            CalendarFormat.month: "month"
+                          },
+                          focusedDay: _focusedDay,
+                          firstDay: DateTime.utc(2010),
+                          lastDay: DateTime.utc(2099))));
+            },
+          );
+        });
   }
 }
 

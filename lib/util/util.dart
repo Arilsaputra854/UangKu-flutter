@@ -1,6 +1,8 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class Type {
   static const int TYPE_PEMASUKAN = 1;
@@ -21,7 +23,7 @@ String konversiKeIDR(String amount) {
 }
 
 String konversiTimestamp(String timestamp) {
-  String formattedDateTime = DateFormat('dd-MM-yyyy HH:mm')
+  String formattedDateTime = DateFormat('dd-MM-yyyy : HH:mm')
       .format(DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp)));
   return formattedDateTime;
 }

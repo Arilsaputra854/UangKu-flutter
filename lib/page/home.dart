@@ -231,7 +231,6 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
     );
   }
 
-//latest
   _tabPengeluaran() {
     return FirebaseAuth.instance.currentUser != null
         ? FutureBuilder(
@@ -267,7 +266,8 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 Spacer(),
-                                Text(snapshot.data![index].tanggal.toString())
+                                Text(konversiTimestamp(
+                                    snapshot.data![index].tanggal.toString()))
                               ],
                             ),
                             Text(snapshot.data![index].kategori),
