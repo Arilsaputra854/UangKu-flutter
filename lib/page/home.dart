@@ -1,12 +1,7 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uangku_pencatat_keuangan/model/account.dart';
 import 'package:uangku_pencatat_keuangan/model/record.dart';
 import 'package:uangku_pencatat_keuangan/page/login.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
@@ -303,28 +298,50 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                   return ListView.builder(
                     itemCount: snapshot.data?.length,
                     itemBuilder: ((context, index) {
-                      return Container(
-                        margin: EdgeInsets.only(
-                            left: 5, right: 5, top: 10, bottom: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                      return InkWell(
+                          onLongPress: () {
+                            _deleteRecord(snapshot.data![index]);
+                          },
+                          onTap: () {
+                            if (snapshot.data != null &&
+                                snapshot.data?[index] != null) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return FormMoneyScreen(
+                                    Type.TYPE_PEMASUKAN, snapshot.data?[index]);
+                              }));
+                            } else {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return FormMoneyScreen(Type.TYPE_PEMASUKAN);
+                              }));
+                            }
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: 5, right: 5, top: 10, bottom: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  konversiKeIDR(snapshot.data![index].jumlah),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                Row(
+                                  children: [
+                                    Text(
+                                      konversiKeIDR(
+                                          snapshot.data![index].jumlah),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Spacer(),
+                                    Text(konversiTimestamp(snapshot
+                                        .data![index].tanggal
+                                        .toString()))
+                                  ],
                                 ),
-                                Spacer(),
-                                Text(konversiTimestamp(
-                                    snapshot.data![index].tanggal.toString()))
+                                Text(snapshot.data![index].kategori),
+                                Text(snapshot.data![index].catatan)
                               ],
                             ),
-                            Text(snapshot.data![index].kategori),
-                            Text(snapshot.data![index].catatan)
-                          ],
-                        ),
-                      );
+                          ));
                     }),
                   );
                 } else {
@@ -335,6 +352,25 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
               }
             }))
         : Center(child: Text("Gagal mengambil data. silakan login!"));
+  }
+
+  _deleteRecord(Record data) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text("Hapus Catatan?"),
+            actions: [
+              ElevatedButton(
+                  onPressed: () {
+                    deleteRecordFromDatabase(Type.TYPE_PEMASUKAN, data.getId);
+                    Navigator.pop(context);
+                    setState(() {});
+                  },
+                  child: Text("Hapus"))
+            ],
+          );
+        });
   }
 }
 

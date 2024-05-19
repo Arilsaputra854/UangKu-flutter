@@ -1,20 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:uangku_pencatat_keuangan/model/record.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
+import 'package:uuid/uuid.dart';
 
 class Record {
+  String id;
   final String catatan;
   final String jumlah;
   final String kategori;
   final String tanggal;
 
   Record({
+    String? id,
     required this.catatan,
     required this.jumlah,
     required this.kategori,
     required this.tanggal,
-  });
+  }) : id = id ?? Uuid().v1();
 
   String get getJumlah => jumlah;
 
@@ -24,7 +26,10 @@ class Record {
 
   String get getTanggal => tanggal;
 
+  String get getId => id;
+
   factory Record.fromJson(Map<String, dynamic> json) => Record(
+      id: json['id'],
       kategori: json['kategori'],
       catatan: json['catatan'],
       jumlah: (json['jumlah']),
@@ -42,13 +47,14 @@ Future<bool> saveRecordToDatabase(int type, Record record) async {
             .collection("pemasukan");
 
         Map<String, dynamic> data = {
+          "id": record.getId,
           "catatan": record.getCatatan,
           "jumlah": record.getJumlah,
           "kategori": record.getKategori,
           "tanggal": record.getTanggal
         };
 
-        await ref.add(data).then((value) {
+        await ref.doc(record.getId).set(data).then((value) {
           print("Data berhasil diupload! ");
         });
         return true;
@@ -116,7 +122,7 @@ Future<List<Record>> getRecordFromDatabase(int type) async {
           records.add(Record.fromJson(data));
         });
 
-        //sorting
+        //TODO : Sorting not update when add new one
         records.sort((a, b) => b.tanggal.compareTo(a.tanggal));
 
         return records;
@@ -130,5 +136,32 @@ Future<List<Record>> getRecordFromDatabase(int type) async {
     }
   } catch (e) {
     return [];
+  }
+}
+
+Future<bool> deleteRecordFromDatabase(int type, String id) async {
+  CollectionReference? ref;
+  switch (type) {
+    case 1:
+      ref = FirebaseFirestore.instance
+          .collection('financial_records')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("pemasukan");
+      break;
+
+    case 2:
+      ref = FirebaseFirestore.instance
+          .collection('financial_records')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("pengeluaran");
+      break;
+    default:
+  }
+
+  if (ref != null) {
+    await ref!.doc(id).delete();
+    return true;
+  } else {
+    return false;
   }
 }

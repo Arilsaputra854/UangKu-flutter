@@ -1,19 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:uangku_pencatat_keuangan/Model/record.dart';
+import 'package:uangku_pencatat_keuangan/model/record.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
+import 'package:uuid/uuid.dart';
 
 class FormMoneyScreen extends StatefulWidget {
-  FormMoneyScreen(this.type);
+  FormMoneyScreen(this.type, [this._record]);
   int type;
+  Record? _record;
 
   @override
   State<FormMoneyScreen> createState() => _FormMoneyScreenState();
@@ -32,6 +29,11 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget._record != null) {
+      jumlahController.text = widget._record!.jumlah;
+      catatanController.text = widget._record!.catatan;
+      kalendarInput = widget._record!.tanggal;
+    }
     return GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(

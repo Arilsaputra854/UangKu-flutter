@@ -6,6 +6,7 @@ import 'package:uangku_pencatat_keuangan/util/util.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // TODO : setting option untuk mobile dan web
   await Firebase.initializeApp(
       options: FirebaseOptions(
           apiKey: "AIzaSyAS_Rxf2csoFKuIoYVJ_dWdxhknGjFS3l4",
