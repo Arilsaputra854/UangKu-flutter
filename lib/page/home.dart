@@ -109,12 +109,6 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                                 )),
                             Spacer(),
                             IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.bar_chart,
-                                  color: Colors.black,
-                                )),
-                            IconButton(
                                 onPressed: () {
                                   FirebaseAuth.instance
                                       .signOut()

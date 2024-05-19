@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uangku_pencatat_keuangan/model/record.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 
 class Record {
@@ -114,6 +115,10 @@ Future<List<Record>> getRecordFromDatabase(int type) async {
               documentSnapshot.data() as Map<String, dynamic>;
           records.add(Record.fromJson(data));
         });
+
+        //sorting
+        records.sort((a, b) => b.tanggal.compareTo(a.tanggal));
+
         return records;
       } else {
         print("Tidak ada data.");
