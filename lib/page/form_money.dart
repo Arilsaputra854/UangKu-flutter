@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:table_calendar/table_calendar.dart';
+import 'package:uangku_pencatat_keuangan/model/kategori.dart';
 import 'package:uangku_pencatat_keuangan/model/record.dart';
+import 'package:uangku_pencatat_keuangan/page/select_category.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,6 +21,7 @@ class FormMoneyScreen extends StatefulWidget {
 class _FormMoneyScreenState extends State<FormMoneyScreen> {
   late TextEditingController jumlahController, catatanController;
   String kalendarInput = "";
+  String kategoriController = "Pilih";
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
@@ -62,6 +65,7 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
               ),
             ),
             body: Container(
+              constraints: BoxConstraints(maxWidth: 500),
               margin: EdgeInsets.only(left: 20, right: 20, top: 30),
               child: SingleChildScrollView(
                 child: Column(children: [
@@ -108,32 +112,35 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
                   ),
                   Container(
                     alignment: Alignment.centerLeft,
-                    child: Column(children: [
-                      Text("Kategori",
-                          style: TextStyle(fontSize: 20, fontFamily: "Inter")),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                            backgroundColor: Colors.yellow,
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)))),
-                        onPressed: () {
-                          _showDialogKategori(context);
-                        },
-                        child: Container(
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              "Pilih",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: "Inter",
-                                  color: Colors.black),
-                            )),
-                      ),
-                    ]),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Kategori",
+                              style:
+                                  TextStyle(fontSize: 20, fontFamily: "Inter")),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor: Colors.yellow,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)))),
+                            onPressed: () {
+                              openCategoryPage();
+                            },
+                            child: Container(
+                                padding: EdgeInsets.all(5),
+                                child: Text(
+                                  kategoriController,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: "Inter",
+                                      color: Colors.black),
+                                )),
+                          ),
+                        ]),
                   ),
                   SizedBox(
                     height: 20,
@@ -251,24 +258,50 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
   }
 
   simpanData(int type) async {
-    if (jumlahController.text.isNotEmpty) {
-      Record record = Record(
-          catatan:
-              catatanController.text.isNotEmpty ? catatanController.text : "-",
-          jumlah: jumlahController.text,
-          kategori: "kategori test",
-          tanggal: kalendarInput.isNotEmpty
-              ? kalendarInput
-              : DateTime.now().millisecondsSinceEpoch.toString());
-      bool result = await saveRecordToDatabase(type, record);
-      if (result) {
-        Fluttertoast.showToast(msg: "Catatan berhasil ditambahkan");
-        Navigator.pop(context, result);
+    if (widget._record != null) {
+      if (jumlahController.text.isNotEmpty) {
+        Record record = widget._record!;
+
+        Record newRecord = Record(
+            id: record.getId,
+            catatan: record.getCatatan,
+            jumlah: jumlahController.text.isEmpty
+                ? record.getJumlah
+                : jumlahController.text,
+            kategori: record.getKategori,
+            tanggal: record.getTanggal);
+
+        bool result = await updateRecord(type, newRecord);
+        if (result) {
+          Fluttertoast.showToast(msg: "Catatan berhasil diupdate");
+          Navigator.pop(context, result);
+        } else {
+          Fluttertoast.showToast(msg: "Gagal mengupdate data");
+        }
       } else {
-        Fluttertoast.showToast(msg: "Gagal menyimpan data");
+        Fluttertoast.showToast(msg: "Jumlah tidak boleh kosong!");
       }
     } else {
-      Fluttertoast.showToast(msg: "Jumlah tidak boleh kosong!");
+      if (jumlahController.text.isNotEmpty) {
+        Record record = Record(
+            catatan: catatanController.text.isNotEmpty
+                ? catatanController.text
+                : "-",
+            jumlah: jumlahController.text,
+            kategori: kategoriController,
+            tanggal: kalendarInput.isNotEmpty
+                ? kalendarInput
+                : DateTime.now().millisecondsSinceEpoch.toString());
+        bool result = await saveRecordToDatabase(type, record);
+        if (result) {
+          Fluttertoast.showToast(msg: "Catatan berhasil upload");
+          Navigator.pop(context, result);
+        } else {
+          Fluttertoast.showToast(msg: "Gagal menyimpan data");
+        }
+      } else {
+        Fluttertoast.showToast(msg: "Jumlah tidak boleh kosong!");
+      }
     }
   }
 
@@ -334,54 +367,16 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
           );
         });
   }
-}
 
-_showDialogKategori(BuildContext context) async {
-  TextEditingController _addKategori = new TextEditingController();
-  String _newKategori = "";
+  openCategoryPage() async {
+    String choosedKategori = await Navigator.push(context,
+        MaterialPageRoute(builder: ((context) => SelectCategory(widget.type))));
 
-  await showDialog<String>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Container(
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text("Kategori",
-                style: TextStyle(
-                    fontSize: 20, fontFamily: "Inter", color: Colors.black)),
-            TextField(
-              onChanged: (value) {
-                _newKategori = value.toString();
-              },
-              controller: _addKategori,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                  backgroundColor: Colors.yellow,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15)))),
-              onPressed: () {
-                if (_newKategori.trim().isEmpty) {
-                  Fluttertoast.showToast(
-                      msg: "Kategori baru tidak boleh kosong!");
-                } else {
-                  Fluttertoast.showToast(
-                      msg: "Kategori ${_newKategori} ditambahkan.");
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                  padding: EdgeInsets.all(5),
-                  child: Text(
-                    "Simpan",
-                    style: TextStyle(
-                        fontSize: 20, fontFamily: "Inter", color: Colors.black),
-                  )),
-            ),
-          ])),
-        );
-      });
+    if (kategoriController != null || kategoriController != "") {
+      kategoriController = choosedKategori;
+      setState(() {});
+    } else {
+      kategoriController = "Pilih";
+    }
+  }
 }

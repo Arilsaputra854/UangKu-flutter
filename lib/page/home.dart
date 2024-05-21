@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:uangku_pencatat_keuangan/model/kategori.dart';
 import 'package:uangku_pencatat_keuangan/model/record.dart';
 import 'package:uangku_pencatat_keuangan/page/login.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
@@ -220,62 +221,6 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
     );
   }
 
-  _tabPengeluaran() {
-    return FirebaseAuth.instance.currentUser != null
-        ? FutureBuilder(
-            future: getRecordFromDatabase(Type.TYPE_PENGELUARAN),
-            builder:
-                ((BuildContext context, AsyncSnapshot<List<Record>> snapshot) {
-              //createRecord();
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: SizedBox(
-                    height: 50,
-                    width: 50,
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Text(snapshot.error.toString());
-              } else if (snapshot.hasData) {
-                if (!snapshot.data!.isEmpty) {
-                  return ListView.builder(
-                    itemCount: snapshot.data?.length,
-                    itemBuilder: ((context, index) {
-                      return Container(
-                        margin: EdgeInsets.only(
-                            left: 5, right: 5, top: 10, bottom: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  konversiKeIDR(snapshot.data![index].jumlah),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Spacer(),
-                                Text(konversiTimestamp(
-                                    snapshot.data![index].tanggal.toString()))
-                              ],
-                            ),
-                            Text(snapshot.data![index].kategori),
-                            Text(snapshot.data![index].catatan)
-                          ],
-                        ),
-                      );
-                    }),
-                  );
-                } else {
-                  return Center(child: Text("Tidak ada data"));
-                }
-              } else {
-                return Center(child: Text("Tidak ada data"));
-              }
-            }))
-        : Center(child: Text("Gagal mengambil data. silakan login!"));
-  }
-
   _tabPemasukan() {
     return FirebaseAuth.instance.currentUser != null
         ? FutureBuilder(
@@ -300,16 +245,25 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                     itemBuilder: ((context, index) {
                       return InkWell(
                           onLongPress: () {
-                            _deleteRecord(snapshot.data![index]);
+                            _deleteRecord(
+                                Type.TYPE_PEMASUKAN, snapshot.data![index]);
                           },
-                          onTap: () {
+                          onTap: () async {
                             if (snapshot.data != null &&
                                 snapshot.data?[index] != null) {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return FormMoneyScreen(
-                                    Type.TYPE_PEMASUKAN, snapshot.data?[index]);
-                              }));
+                              try {
+                                bool result = false;
+                                result = await Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return FormMoneyScreen(Type.TYPE_PEMASUKAN,
+                                      snapshot.data?[index]);
+                                }));
+                                if (result) {
+                                  setState(() {});
+                                }
+                              } catch (e) {
+                                print("Canceled");
+                              }
                             } else {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
@@ -354,7 +308,94 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
         : Center(child: Text("Gagal mengambil data. silakan login!"));
   }
 
-  _deleteRecord(Record data) {
+  _tabPengeluaran() {
+    return FirebaseAuth.instance.currentUser != null
+        ? FutureBuilder(
+            future: getRecordFromDatabase(Type.TYPE_PENGELUARAN),
+            builder:
+                ((BuildContext context, AsyncSnapshot<List<Record>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              } else if (snapshot.hasData) {
+                if (!snapshot.data!.isEmpty) {
+                  //loading data
+                  return ListView.builder(
+                    itemCount: snapshot.data?.length,
+                    itemBuilder: ((context, index) {
+                      return InkWell(
+                          onLongPress: () {
+                            _deleteRecord(
+                                Type.TYPE_PENGELUARAN, snapshot.data![index]);
+                          },
+                          onTap: () async {
+                            if (snapshot.data != null &&
+                                snapshot.data?[index] != null) {
+                              try {
+                                bool result = false;
+                                result = await Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return FormMoneyScreen(Type.TYPE_PENGELUARAN,
+                                      snapshot.data?[index]);
+                                }));
+                                if (result) {
+                                  setState(() {});
+                                }
+                              } catch (e) {
+                                print("Canceled");
+                              }
+                            } else {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return FormMoneyScreen(Type.TYPE_PENGELUARAN);
+                              }));
+                            }
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: 5, right: 5, top: 10, bottom: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      konversiKeIDR(
+                                          snapshot.data![index].jumlah),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Spacer(),
+                                    Text(konversiTimestamp(snapshot
+                                        .data![index].tanggal
+                                        .toString()))
+                                  ],
+                                ),
+                                Text(snapshot.data![index].kategori),
+                                Text(snapshot.data![index].catatan)
+                              ],
+                            ),
+                          ));
+                    }),
+                  );
+                } else {
+                  return Center(child: Text("Tidak ada data"));
+                }
+              } else {
+                return Center(child: Text("Tidak ada data"));
+              }
+            }))
+        : Center(child: Text("Gagal mengambil data. silakan login!"));
+  }
+
+  _deleteRecord(int type, Record data) {
     showDialog(
         context: context,
         builder: (context) {
@@ -363,7 +404,11 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
             actions: [
               ElevatedButton(
                   onPressed: () {
-                    deleteRecordFromDatabase(Type.TYPE_PEMASUKAN, data.getId);
+                    deleteRecordFromDatabase(
+                        type == Type.TYPE_PEMASUKAN
+                            ? Type.TYPE_PEMASUKAN
+                            : Type.TYPE_PENGELUARAN,
+                        data.getId);
                     Navigator.pop(context);
                     setState(() {});
                   },

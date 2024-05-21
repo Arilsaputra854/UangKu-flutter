@@ -36,6 +36,56 @@ class Record {
       tanggal: (json['tanggal']));
 }
 
+Future<bool> updateRecord(int type, Record record) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  CollectionReference ref;
+
+  Map<String, dynamic> data = {
+    "id": record.getId,
+    "catatan": record.getCatatan,
+    "jumlah": record.getJumlah,
+    "kategori": record.getKategori,
+    "tanggal": record.getTanggal
+  };
+  switch (type) {
+    case Type.TYPE_PEMASUKAN:
+      try {
+        ref = firestore!
+            .collection('financial_records')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("pemasukan");
+
+        await ref.doc(record.getId).update(data).then((value) {
+          print(record.getId);
+          print("Data berhasil diupdate");
+        });
+        return true;
+      } catch (e) {
+        print(e);
+        return false;
+      }
+    case Type.TYPE_PENGELUARAN:
+      try {
+        ref = firestore!
+            .collection('financial_records')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("pengeluaran");
+
+        await ref.doc(record.getId).update(data).then((value) {
+          print(record.getId);
+          print("Data berhasil diupdate");
+        });
+        return true;
+      } catch (e) {
+        print(e);
+        return false;
+      }
+
+    default:
+      return false;
+  }
+}
+
 Future<bool> saveRecordToDatabase(int type, Record record) async {
   switch (type) {
     case Type.TYPE_PEMASUKAN:
@@ -72,13 +122,14 @@ Future<bool> saveRecordToDatabase(int type, Record record) async {
             .collection("pengeluaran");
 
         Map<String, dynamic> data = {
+          "id": record.getId,
           "catatan": record.getCatatan,
           "jumlah": record.getJumlah,
           "kategori": record.getKategori,
           "tanggal": record.getTanggal
         };
 
-        await ref.add(data).then((value) {
+        await ref.doc(record.getId).set(data).then((value) {
           print("Data berhasil diupload! ");
         });
         return true;
@@ -142,14 +193,14 @@ Future<List<Record>> getRecordFromDatabase(int type) async {
 Future<bool> deleteRecordFromDatabase(int type, String id) async {
   CollectionReference? ref;
   switch (type) {
-    case 1:
+    case Type.TYPE_PEMASUKAN:
       ref = FirebaseFirestore.instance
           .collection('financial_records')
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("pemasukan");
       break;
 
-    case 2:
+    case Type.TYPE_PENGELUARAN:
       ref = FirebaseFirestore.instance
           .collection('financial_records')
           .doc(FirebaseAuth.instance.currentUser!.uid)
