@@ -7,12 +7,12 @@ import 'package:uangku_pencatat_keuangan/util/util.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // TODO : setting option untuk mobile dan web
-  await Firebase.initializeApp(
-      options: FirebaseOptions(
-          apiKey: "AIzaSyAS_Rxf2csoFKuIoYVJ_dWdxhknGjFS3l4",
-          appId: "1:713929882960:web:24eb93a22221e4bf22c055",
-          messagingSenderId: "713929882960",
-          projectId: "uangku-application"));
+  await Firebase.initializeApp();
+  // options: FirebaseOptions(
+  //     apiKey: "AIzaSyAS_Rxf2csoFKuIoYVJ_dWdxhknGjFS3l4",
+  //     appId: "1:713929882960:web:24eb93a22221e4bf22c055",
+  //     messagingSenderId: "713929882960",
+  //     projectId: "uangku-application"));
   runApp(const MyApp());
 }
 
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'Uangku',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          primaryColor: CustomColor.Yellow,
+          primaryColor: Colors.yellow,
           appBarTheme: AppBarTheme(color: Colors.white)),
       home: Splashscreen(),
     );

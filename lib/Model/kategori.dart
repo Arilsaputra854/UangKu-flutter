@@ -17,7 +17,7 @@ class Kategori {
       Kategori(nama: json['nama']);
 }
 
-Future<Kategori> saveKategoriToDatabase(Kategori kategori) async {
+Future<Kategori> saveKategoriToDatabase(int type, Kategori kategori) async {
   try {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference ref = firestore
@@ -27,12 +27,19 @@ Future<Kategori> saveKategoriToDatabase(Kategori kategori) async {
 
     List<String> newData = [];
     newData.add(kategori.nama);
-    await ref
-        .doc("pemasukan")
-        .update({"nama": FieldValue.arrayUnion(newData)}).then((value) {
-      print("Berhasil menambahkan kategori");
-    });
-
+    if (type == Type.TYPE_PEMASUKAN) {
+      await ref
+          .doc("pemasukan")
+          .update({"nama": FieldValue.arrayUnion(newData)}).then((value) {
+        print("Berhasil menambahkan kategori");
+      });
+    } else {
+      await ref
+          .doc("pengeluaran")
+          .update({"nama": FieldValue.arrayUnion(newData)}).then((value) {
+        print("Berhasil menambahkan kategori");
+      });
+    }
     return Kategori(nama: kategori.nama);
   } catch (e) {
     print("ERROR: $e");
@@ -46,11 +53,24 @@ Future<bool> removeKategoriFromDatabase(int type, Kategori kategori) async {
       .collection("financial_records")
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection("kategori");
-
-  DocumentSnapshot snapshot = type == Type.TYPE_PEMASUKAN
-      ? await ref.doc("pemasukan").get()
-      : await ref.doc("pengeluaran").get();
+  try {
+    type == Type.TYPE_PEMASUKAN
+        ? await ref.doc("pemasukan").update({
+            "nama": FieldValue.arrayRemove([kategori.getKategori()])
+          }).then((value) {
+            print("Berhasil menghapus kategori ${kategori.getKategori()} ");
+          })
+        : await ref.doc("pengeluaran").update({
+            "nama": FieldValue.arrayRemove([kategori.getKategori()])
+          }).then((value) {
+            print("Berhasil menghapus kategori ${kategori.getKategori()} ");
+          });
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
+//TODO delete kategori
 
 Future<List<Kategori>> getKategoriFromDatabase(int type) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;

@@ -48,11 +48,25 @@ class _SelectCategoryState extends State<SelectCategory> {
                     height: 200,
                     child: CircularProgressIndicator()),
               );
-            } else if (snapshot.hasData) {
+            } else if (snapshot.hasData && snapshot.data?.length != 0) {
               return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: ((context, index) {
                   return InkWell(
+                      onLongPress: () async {
+                        bool sucess = await removeKategoriFromDatabase(
+                            widget.type,
+                            Kategori(nama: snapshot.data![index].nama));
+
+                        if (sucess) {
+                          setState(() {});
+                          Fluttertoast.showToast(
+                              msg:
+                                  "Berhasil menghapus kategori ${snapshot.data![index].nama}");
+                        } else {
+                          Fluttertoast.showToast(msg: "Terjadi kesalahan");
+                        }
+                      },
                       onTap: () =>
                           Navigator.pop(context, snapshot.data![index].nama),
                       child: Text(
@@ -72,66 +86,73 @@ class _SelectCategoryState extends State<SelectCategory> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () async {
-        String kategori = await _showDialogKategori(context);
-        print(kategori);
-        if (kategori != "") {
-          setState(() {});
-          Fluttertoast.showToast(msg: "Berhasil menambahkan ${kategori}.");
-        } else {
-          Fluttertoast.showToast(msg: "Terjadi kesalahan.");
-        }
-      }),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.yellow,
+          child: Icon(
+            Icons.add,
+            color: Colors.black,
+          ),
+          onPressed: () async {
+            String kategori = await _showDialogKategori(context);
+            if (kategori != "") {
+              setState(() {});
+              Fluttertoast.showToast(msg: "Berhasil menambahkan ${kategori}.");
+            } else {
+              Fluttertoast.showToast(msg: "Terjadi kesalahan.");
+            }
+          }),
     );
   }
-}
 
-_showDialogKategori(BuildContext context) async {
-  TextEditingController kategoryController = new TextEditingController();
-  String _newKategori = "";
+  _showDialogKategori(BuildContext context) async {
+    TextEditingController kategoryController = new TextEditingController();
+    String _newKategori = "";
 
-  return showDialog<String>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Container(
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text("Kategori",
-                style: TextStyle(
-                    fontSize: 20, fontFamily: "Inter", color: Colors.black)),
-            TextField(
-              onChanged: (value) {
-                _newKategori = value.toString();
-              },
-              controller: kategoryController,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                  backgroundColor: Colors.yellow,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15)))),
-              onPressed: () async {
-                if (_newKategori.trim().isEmpty) {
-                  Fluttertoast.showToast(
-                      msg: "Kategori baru tidak boleh kosong!");
-                } else {
-                  Kategori kategori = Kategori(nama: _newKategori);
-                  await saveKategoriToDatabase(kategori);
-                  Navigator.pop(context, _newKategori);
-                }
-              },
-              child: Container(
-                  padding: EdgeInsets.all(5),
-                  child: Text(
-                    "Simpan",
-                    style: TextStyle(
-                        fontSize: 20, fontFamily: "Inter", color: Colors.black),
-                  )),
-            ),
-          ])),
-        );
-      });
+    return showDialog<String>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Text("Kategori",
+                  style: TextStyle(
+                      fontSize: 20, fontFamily: "Inter", color: Colors.black)),
+              TextField(
+                onChanged: (value) {
+                  _newKategori = value.toString();
+                },
+                controller: kategoryController,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15)))),
+                onPressed: () async {
+                  if (_newKategori.trim().isEmpty) {
+                    Fluttertoast.showToast(
+                        msg: "Kategori baru tidak boleh kosong!");
+                  } else {
+                    Kategori kategori = Kategori(nama: _newKategori);
+                    await saveKategoriToDatabase(widget.type, kategori);
+                    Navigator.pop(context, _newKategori);
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.all(5),
+                    child: Text(
+                      "Simpan",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "Inter",
+                          color: Colors.black),
+                    )),
+              ),
+            ])),
+          );
+        });
+  }
 }

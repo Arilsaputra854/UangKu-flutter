@@ -9,10 +9,6 @@ class Type {
   static const int TYPE_PENGELUARAN = 2;
 }
 
-class CustomColor {
-  static const Yellow = Color(0xFFE600);
-}
-
 String konversiKeIDR(String amount) {
   double parsedAmount = double.parse(amount);
 

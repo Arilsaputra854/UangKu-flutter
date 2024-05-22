@@ -27,6 +27,11 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
   void initState() {
     jumlahController = new TextEditingController();
     catatanController = new TextEditingController();
+
+    if (widget._record != null) {
+      kategoriController = widget._record!.kategori;
+    }
+
     super.initState();
   }
 
@@ -268,7 +273,9 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
             jumlah: jumlahController.text.isEmpty
                 ? record.getJumlah
                 : jumlahController.text,
-            kategori: record.getKategori,
+            kategori: kategoriController.isEmpty
+                ? record.getKategori
+                : kategoriController,
             tanggal: record.getTanggal);
 
         bool result = await updateRecord(type, newRecord);
@@ -282,7 +289,7 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
         Fluttertoast.showToast(msg: "Jumlah tidak boleh kosong!");
       }
     } else {
-      if (jumlahController.text.isNotEmpty) {
+      if (kategoriController != "Pilih" && jumlahController.text.isNotEmpty) {
         Record record = Record(
             catatan: catatanController.text.isNotEmpty
                 ? catatanController.text
@@ -299,8 +306,10 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
         } else {
           Fluttertoast.showToast(msg: "Gagal menyimpan data");
         }
-      } else {
+      } else if (jumlahController.text.isEmpty) {
         Fluttertoast.showToast(msg: "Jumlah tidak boleh kosong!");
+      } else if (kategoriController == "Pilih") {
+        Fluttertoast.showToast(msg: "Pilih kategori terlebidahulu!");
       }
     }
   }

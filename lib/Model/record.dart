@@ -47,6 +47,7 @@ Future<bool> updateRecord(int type, Record record) async {
     "kategori": record.getKategori,
     "tanggal": record.getTanggal
   };
+
   switch (type) {
     case Type.TYPE_PEMASUKAN:
       try {
