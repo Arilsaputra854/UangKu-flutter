@@ -42,8 +42,6 @@ class _login_pageState extends State<login_page> {
     final double screenWidth = _sizeOfScreen.width;
     final double screenHeight = _sizeOfScreen.height;
 
-    print("LOG: UKURAN LAYAR ${screenWidth}");
-
     if (screenWidth > 700) {
       return usingDesktopLayout(screenWidth);
     } else {
@@ -57,7 +55,18 @@ class _login_pageState extends State<login_page> {
       _password = PasswordController.text;
 
       try {
-        final credential = await FirebaseAuth.instance
+        showDialog(
+            context: context,
+            builder: (context) {
+              return Center(
+                  child: Container(
+                width: 100,
+                height: 100,
+                constraints: BoxConstraints(maxWidth: 100, maxHeight: 100),
+                child: CircularProgressIndicator(),
+              ));
+            });
+        await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _Email, password: _password)
             .then((value) {
           if (FirebaseAuth.instance.currentUser!.emailVerified == false) {
@@ -66,13 +75,11 @@ class _login_pageState extends State<login_page> {
                 MaterialPageRoute(
                     builder: ((context) => EmailVerificationScreen())));
           } else {
-            Fluttertoast.showToast(msg: "Login Berhasil");
-
-            print("LOG : ${FirebaseAuth.instance.currentUser!.uid}");
+            Fluttertoast.showToast(msg: "Login Berhasil!");
 
             saveUserToken(FirebaseAuth.instance.currentUser!.uid);
 
-            Navigator.push(context,
+            Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: ((context) => HomeScreen())));
           }
         });

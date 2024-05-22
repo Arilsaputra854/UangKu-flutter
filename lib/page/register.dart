@@ -226,16 +226,18 @@ class _RegisterPageState extends State<RegisterPage> {
         try {
           UserCredential userCredential = await FirebaseAuth.instance
               .createUserWithEmailAndPassword(email: email, password: password);
-          Fluttertoast.showToast(msg: "Akun berhasil dibuat");
 
           FirebaseFirestore firestore = FirebaseFirestore.instance;
           firestore
               .collection("financial_records")
               .doc(userCredential.user!.uid)
-              .set({"records": FieldValue.arrayUnion([])});
+              .collection("kategori")
+              .add({"nama": FieldValue.arrayUnion([])});
 
           Navigator.pop(
               context, MaterialPageRoute(builder: (context) => login_page()));
+
+          Fluttertoast.showToast(msg: "Akun berhasil dibuat");
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
             Fluttertoast.showToast(msg: "Error: Password minimal 8 huruf.");

@@ -143,6 +143,41 @@ Future<bool> saveRecordToDatabase(int type, Record record) async {
   }
 }
 
+Future<bool> cleanRecord(int type) async {
+  try {
+    CollectionReference? ref;
+    switch (type) {
+      case Type.TYPE_PEMASUKAN:
+        ref = FirebaseFirestore.instance
+            .collection('financial_records')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("pemasukan");
+        break;
+
+      case Type.TYPE_PENGELUARAN:
+        ref = FirebaseFirestore.instance
+            .collection('financial_records')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("pengeluaran");
+        break;
+      default:
+    }
+
+    if (ref != null) {
+      QuerySnapshot snapshot = await ref.get();
+      for (var doc in snapshot.docs) {
+        doc.reference.delete();
+      }
+
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+}
+
 Future<List<Record>> getRecordFromDatabase(int type) async {
   CollectionReference? ref;
   switch (type) {

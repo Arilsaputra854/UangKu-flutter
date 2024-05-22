@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uangku_pencatat_keuangan/model/kategori.dart';
 import 'package:uangku_pencatat_keuangan/model/record.dart';
 import 'package:uangku_pencatat_keuangan/page/login.dart';
+import 'package:uangku_pencatat_keuangan/page/setting.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 
 import 'form_money.dart';
@@ -105,14 +107,26 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                                 )),
                             Spacer(),
                             IconButton(
-                                onPressed: () {
-                                  FirebaseAuth.instance
-                                      .signOut()
-                                      .then((value) async {
-                                    saveUserToken("");
+                                onPressed: () async {
+                                  try {
+                                    bool delete = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SettingPage()));
+                                    if (delete) {
+                                      setState(() {});
 
-                                    print("LOG: Signout Berhasil!");
-                                  });
+                                      Fluttertoast.showToast(
+                                          msg: "Catatan dihapus!");
+                                    }
+                                  } catch (e) {
+                                    print(e);
+                                    setState(() {
+                                      Fluttertoast.showToast(
+                                          msg: "Terjadi Kesalahan.");
+                                    });
+                                  }
                                 },
                                 icon: Icon(
                                   Icons.settings,

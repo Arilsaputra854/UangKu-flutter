@@ -3,15 +3,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uangku_pencatat_keuangan/model/kategori.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 
-class SelectCategory extends StatefulWidget {
+class CategoryPage extends StatefulWidget {
   int type;
-  SelectCategory(this.type);
+  CategoryPage(this.type);
 
   @override
-  State<SelectCategory> createState() => _SelectCategoryState();
+  State<CategoryPage> createState() => _SelectCategoryState();
 }
 
-class _SelectCategoryState extends State<SelectCategory> {
+class _SelectCategoryState extends State<CategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,19 +53,8 @@ class _SelectCategoryState extends State<SelectCategory> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: ((context, index) {
                   return InkWell(
-                      onLongPress: () async {
-                        bool sucess = await removeKategoriFromDatabase(
-                            widget.type,
-                            Kategori(nama: snapshot.data![index].nama));
-
-                        if (sucess) {
-                          setState(() {});
-                          Fluttertoast.showToast(
-                              msg:
-                                  "Berhasil menghapus kategori ${snapshot.data![index].nama}");
-                        } else {
-                          Fluttertoast.showToast(msg: "Terjadi kesalahan");
-                        }
+                      onLongPress: () {
+                        return _deleteKategori(snapshot.data![index]);
                       },
                       onTap: () =>
                           Navigator.pop(context, snapshot.data![index].nama),
@@ -102,6 +91,33 @@ class _SelectCategoryState extends State<SelectCategory> {
             }
           }),
     );
+  }
+
+  _deleteKategori(Kategori kategori) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text("Hapus kategori ${kategori.nama}?"),
+            actions: [
+              ElevatedButton(
+                  onPressed: () async {
+                    bool sucess = await removeKategoriFromDatabase(
+                        widget.type, Kategori(nama: kategori.nama));
+
+                    if (sucess) {
+                      Fluttertoast.showToast(
+                          msg: "Berhasil menghapus kategori ${kategori.nama}");
+                    } else {
+                      Fluttertoast.showToast(msg: "Terjadi kesalahan");
+                    }
+                    Navigator.pop(context);
+                    setState(() {});
+                  },
+                  child: Text("Hapus"))
+            ],
+          );
+        });
   }
 
   _showDialogKategori(BuildContext context) async {

@@ -23,7 +23,6 @@ class Splashscreen extends StatelessWidget {
 
         if (currentUser != "") {
           print("LOG: token found! ${token}");
-          Fluttertoast.showToast(msg: "Preparing application...");
           Timer(
               Duration(seconds: 5),
               () => Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -48,6 +47,10 @@ class Splashscreen extends StatelessWidget {
           Text(
             "UangKu",
             style: TextStyle(fontSize: 30, fontFamily: "Futura"),
+          ),
+          Text(
+            "v1.0.0",
+            style: TextStyle(fontSize: 15, fontFamily: "Futura"),
           )
         ]),
       ),

@@ -3,9 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:table_calendar/table_calendar.dart';
-import 'package:uangku_pencatat_keuangan/model/kategori.dart';
 import 'package:uangku_pencatat_keuangan/model/record.dart';
-import 'package:uangku_pencatat_keuangan/page/select_category.dart';
+import 'package:uangku_pencatat_keuangan/page/categori_page.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 import 'package:uuid/uuid.dart';
 
@@ -379,7 +378,7 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
 
   openCategoryPage() async {
     String choosedKategori = await Navigator.push(context,
-        MaterialPageRoute(builder: ((context) => SelectCategory(widget.type))));
+        MaterialPageRoute(builder: ((context) => CategoryPage(widget.type))));
 
     if (kategoriController != null || kategoriController != "") {
       kategoriController = choosedKategori;
