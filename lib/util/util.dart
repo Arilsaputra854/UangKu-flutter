@@ -23,3 +23,27 @@ String konversiTimestamp(String timestamp) {
       .format(DateTime.fromMillisecondsSinceEpoch(int.parse(timestamp)));
   return formattedDateTime;
 }
+
+void loadingUangku(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(Colors.black),
+              ),
+              SizedBox(width: 20.0),
+              Text("Memproses"),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}

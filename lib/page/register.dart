@@ -1,19 +1,12 @@
-import 'dart:developer' as dev;
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:uangku_pencatat_keuangan/model/kategori.dart';
 import 'package:uangku_pencatat_keuangan/page/login.dart';
+import 'package:uangku_pencatat_keuangan/util/util.dart';
 
-import '../backend/email_ver.dart';
+import 'email_ver.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -153,10 +146,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                         child: TextFormField(
                                             validator: (value) {
                                               if (value!.isEmpty) {
+                                                Navigator.pop(context);
                                                 return "Please enter your confirm password.";
                                               }
                                               if (value !=
                                                   PasswordController.text) {
+                                                Navigator.pop(context);
                                                 return "Your password not same as before.";
                                               }
 
@@ -180,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(15)))),
                                         onPressed: () {
-                                          Registered();
+                                          registerAccount();
                                         },
                                         child: Container(
                                             width: 250,
@@ -205,54 +200,47 @@ class _RegisterPageState extends State<RegisterPage> {
                 ))));
   }
 
-  void Registered() {
-    final db = FirebaseFirestore.instance;
+  void registerAccount() async {
+    loadingUangku(context);
 
     if (_formKey.currentState!.validate()) {
       _Email = EmailController.text;
       _password = PasswordController.text;
 
-      _verificationEmail({email}) {
-        FirebaseAuth.instance.currentUser?.sendEmailVerification();
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: _Email, password: _password);
 
-        var isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+        Navigator.pop(context); // Menutup dialog loading
+        FirebaseFirestore firestore = FirebaseFirestore.instance;
+        await firestore
+            .collection("financial_records")
+            .doc(userCredential.user!.uid)
+            .collection("kategori")
+            .doc("pemasukan")
+            .set({"nama": FieldValue.arrayUnion([])});
 
-        if (isEmailVerified) {
-          Fluttertoast.showToast(msg: "Email berhasil diVerifikasi");
+        await firestore
+            .collection("financial_records")
+            .doc(userCredential.user!.uid)
+            .collection("kategori")
+            .doc("pengeluaran")
+            .set({"nama": FieldValue.arrayUnion([])});
+
+        Navigator.pop(
+            context, MaterialPageRoute(builder: (context) => login_page()));
+        Fluttertoast.showToast(msg: "Akun berhasil dibuat");
+      } on FirebaseAuthException catch (e) {
+        Navigator.pop(context); // Menutup dialog loading
+
+        if (e.code == 'weak-password') {
+          Fluttertoast.showToast(msg: "Error: Password minimal 8 huruf.");
+        } else if (e.code == 'email-already-in-use') {
+          Fluttertoast.showToast(msg: "Error: Email telah digunakan.");
+        } else if (e.code == 'invalid-email') {
+          Fluttertoast.showToast(msg: 'Error: Email tidak valid.');
         }
       }
-
-      _signUpFirebase({email, password}) async {
-        try {
-          UserCredential userCredential = await FirebaseAuth.instance
-              .createUserWithEmailAndPassword(email: email, password: password);
-
-          FirebaseFirestore firestore = FirebaseFirestore.instance;
-          firestore
-              .collection("financial_records")
-              .doc(userCredential.user!.uid)
-              .collection("kategori")
-              .add({"nama": FieldValue.arrayUnion([])});
-
-          Navigator.pop(
-              context, MaterialPageRoute(builder: (context) => login_page()));
-
-          Fluttertoast.showToast(msg: "Akun berhasil dibuat");
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'weak-password') {
-            Fluttertoast.showToast(msg: "Error: Password minimal 8 huruf.");
-          }
-          if (e.code == 'email-already-in-use') {
-            Fluttertoast.showToast(msg: "Error: Email telah digunakan.");
-          }
-          if (e.code == 'invalid-email') {
-            Fluttertoast.showToast(msg: 'Error: Email tidak valid.');
-          }
-        }
-      }
-
-      _signUpFirebase(
-          email: EmailController.text, password: PasswordController.text);
     }
   }
 }

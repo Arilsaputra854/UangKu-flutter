@@ -42,12 +42,22 @@ class _SelectCategoryState extends State<CategoryPage> {
           future: getKategoriFromDatabase(widget.type),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Container(
-                    width: 200,
-                    height: 200,
-                    child: CircularProgressIndicator()),
+              return Dialog(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.black),
+                      ),
+                      SizedBox(width: 20.0),
+                      Text("Memproses"),
+                    ],
+                  ),
+                ),
               );
+              ;
             } else if (snapshot.hasData && snapshot.data?.length != 0) {
               return ListView.builder(
                 itemCount: snapshot.data!.length,

@@ -9,9 +9,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uangku_pencatat_keuangan/backend/email_ver.dart';
+import 'package:uangku_pencatat_keuangan/page/email_ver.dart';
 import 'package:uangku_pencatat_keuangan/page/home.dart';
 import 'package:uangku_pencatat_keuangan/page/register.dart';
+import 'package:uangku_pencatat_keuangan/util/util.dart';
 
 class login_page extends StatefulWidget {
   const login_page({Key? key}) : super(key: key);
@@ -55,26 +56,18 @@ class _login_pageState extends State<login_page> {
       _password = PasswordController.text;
 
       try {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return Center(
-                  child: Container(
-                width: 100,
-                height: 100,
-                constraints: BoxConstraints(maxWidth: 100, maxHeight: 100),
-                child: CircularProgressIndicator(),
-              ));
-            });
+        loadingUangku(context);
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _Email, password: _password)
             .then((value) {
           if (FirebaseAuth.instance.currentUser!.emailVerified == false) {
+            Navigator.pop(context);
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: ((context) => EmailVerificationScreen())));
           } else {
+            Navigator.pop(context);
             Fluttertoast.showToast(msg: "Login Berhasil!");
 
             saveUserToken(FirebaseAuth.instance.currentUser!.uid);
@@ -84,6 +77,7 @@ class _login_pageState extends State<login_page> {
           }
         });
       } on FirebaseAuthException catch (e) {
+        Navigator.pop(context);
         if (e.code == 'user-not-found') {
           Fluttertoast.showToast(msg: 'Error: Akun belum Terdaftar.');
         } else if (e.code == 'wrong-password') {
