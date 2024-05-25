@@ -1,11 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uangku_pencatat_keuangan/firebase_options.dart';
 import 'package:uangku_pencatat_keuangan/page/splash_screen.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // TODO : setting option untuk mobile dan web
   await Firebase.initializeApp();
   // options: FirebaseOptions(
@@ -24,9 +26,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Uangku',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primaryColor: Colors.yellow,
-          appBarTheme: AppBarTheme(color: Colors.white)),
       home: Splashscreen(),
     );
   }

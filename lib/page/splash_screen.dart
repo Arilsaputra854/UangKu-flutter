@@ -49,7 +49,7 @@ class Splashscreen extends StatelessWidget {
             style: TextStyle(fontSize: 30, fontFamily: "Futura"),
           ),
           Text(
-            "v1.0.0",
+            "v1.0.1",
             style: TextStyle(fontSize: 15, fontFamily: "Futura"),
           )
         ]),

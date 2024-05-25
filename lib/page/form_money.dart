@@ -57,7 +57,6 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
                           fontSize: 20,
                           fontFamily: "Inter",
                           color: Colors.black)),
-              backgroundColor: Colors.transparent,
               leading: InkWell(
                 onTap: () {
                   Navigator.pop(context);
@@ -69,7 +68,6 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
               ),
             ),
             body: Container(
-              constraints: BoxConstraints(maxWidth: 500),
               margin: EdgeInsets.only(left: 20, right: 20, top: 30),
               child: SingleChildScrollView(
                 child: Column(children: [
@@ -323,7 +321,23 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
           return StatefulBuilder(
             builder: (context, setState) {
               return AlertDialog(
+                  actionsAlignment: MainAxisAlignment.spaceBetween,
                   actions: [
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red),
+                        onPressed: () {
+                          Navigator.pop(
+                            context,
+                          );
+                        },
+                        child: Text(
+                          "Batal",
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: "Inter",
+                              color: Colors.white),
+                        )),
                     ElevatedButton(
                         onPressed: () {
                           DateTime now = DateTime.now();
@@ -342,35 +356,65 @@ class _FormMoneyScreenState extends State<FormMoneyScreen> {
                           String timestamp =
                               formatedDate.millisecondsSinceEpoch.toString();
                           Navigator.pop(context, timestamp);
-                          ;
                         },
-                        child: Text("Oke"))
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.yellow),
+                        child: Text(
+                          "Oke",
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: "Inter",
+                              color: Colors.black),
+                        ))
                   ],
                   content: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: MediaQuery.of(context).size.height * 0.8,
-                      child: TableCalendar(
-                          onPageChanged: (focusedDay) {
-                            setState(() {
-                              _focusedDay = focusedDay;
-                            });
-                          },
-                          selectedDayPredicate: (day) {
-                            return isSameDay(day, _selectedDay);
-                          },
-                          onDaySelected: (selectedDay, focusedDay) {
-                            setState(() {
-                              _selectedDay = selectedDay;
-                              _focusedDay = focusedDay;
-                            });
-                          },
-                          calendarFormat: CalendarFormat.month,
-                          availableCalendarFormats: {
-                            CalendarFormat.month: "month"
-                          },
-                          focusedDay: _focusedDay,
-                          firstDay: DateTime.utc(2010),
-                          lastDay: DateTime.utc(2099))));
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: Column(
+                      children: [
+                        Expanded(
+                            child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 1,
+                                child: TableCalendar(
+                                    calendarStyle: CalendarStyle(
+                                        selectedTextStyle: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 15,
+                                            fontFamily: "Inter"),
+                                        selectedDecoration: BoxDecoration(
+                                            color: Colors.yellow,
+                                            shape: BoxShape.circle),
+                                        todayDecoration: BoxDecoration(
+                                            color: Colors.grey,
+                                            shape: BoxShape.circle),
+                                        todayTextStyle: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontFamily: "Inter")),
+                                    shouldFillViewport: true,
+                                    onPageChanged: (focusedDay) {
+                                      setState(() {
+                                        _focusedDay = focusedDay;
+                                      });
+                                    },
+                                    selectedDayPredicate: (day) {
+                                      return isSameDay(day, _selectedDay);
+                                    },
+                                    onDaySelected: (selectedDay, focusedDay) {
+                                      setState(() {
+                                        _selectedDay = selectedDay;
+                                        _focusedDay = focusedDay;
+                                      });
+                                    },
+                                    calendarFormat: CalendarFormat.month,
+                                    availableCalendarFormats: {
+                                      CalendarFormat.month: "month"
+                                    },
+                                    focusedDay: _focusedDay,
+                                    firstDay: DateTime.utc(2010),
+                                    lastDay: DateTime.utc(2099))))
+                      ],
+                    ),
+                  ));
             },
           );
         });

@@ -68,13 +68,17 @@ class _SelectCategoryState extends State<CategoryPage> {
                       },
                       onTap: () =>
                           Navigator.pop(context, snapshot.data![index].nama),
-                      child: Text(
-                        snapshot.data![index].nama,
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: "Inter",
-                            color: Colors.black),
-                      ));
+                      child: Card(
+                          child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          snapshot.data![index].nama,
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontFamily: "Inter",
+                              color: Colors.black),
+                        ),
+                      )));
                 }),
               );
             } else {
@@ -108,8 +112,26 @@ class _SelectCategoryState extends State<CategoryPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Text("Hapus kategori ${kategori.nama}?"),
+            actionsAlignment: MainAxisAlignment.spaceBetween,
+            content: Container(
+              margin: EdgeInsets.only(top: 10),
+              child: Text("Hapus kategori ${kategori.nama}?",
+                  style: TextStyle(
+                      fontSize: 20, fontFamily: "Inter", color: Colors.black)),
+            ),
             actions: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                    );
+                  },
+                  child: Text(
+                    "Batal",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: "Inter", color: Colors.white),
+                  )),
               ElevatedButton(
                   onPressed: () async {
                     bool sucess = await removeKategoriFromDatabase(
@@ -124,7 +146,13 @@ class _SelectCategoryState extends State<CategoryPage> {
                     Navigator.pop(context);
                     setState(() {});
                   },
-                  child: Text("Hapus"))
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.yellow),
+                  child: Text(
+                    "Hapus",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: "Inter", color: Colors.black),
+                  ))
             ],
           );
         });
@@ -138,44 +166,51 @@ class _SelectCategoryState extends State<CategoryPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            actionsAlignment: MainAxisAlignment.spaceBetween,
+            actions: [
+              ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                    );
+                  },
+                  child: Text(
+                    "Batal",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: "Inter", color: Colors.white),
+                  )),
+              ElevatedButton(
+                  onPressed: () async {
+                    if (_newKategori.trim().isEmpty) {
+                      Fluttertoast.showToast(
+                          msg: "Kategori baru tidak boleh kosong!");
+                    } else {
+                      Kategori kategori = Kategori(nama: _newKategori);
+                      await saveKategoriToDatabase(widget.type, kategori);
+                      Navigator.pop(context, _newKategori);
+                    }
+                  },
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.yellow),
+                  child: Text(
+                    "Simpan",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: "Inter", color: Colors.black),
+                  ))
+            ],
             content: Container(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
               Text("Kategori",
                   style: TextStyle(
                       fontSize: 20, fontFamily: "Inter", color: Colors.black)),
               TextField(
+                style: TextStyle(
+                    fontSize: 20, fontFamily: "Inter", color: Colors.black),
                 onChanged: (value) {
                   _newKategori = value.toString();
                 },
                 controller: kategoryController,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                    backgroundColor: Colors.yellow,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15)))),
-                onPressed: () async {
-                  if (_newKategori.trim().isEmpty) {
-                    Fluttertoast.showToast(
-                        msg: "Kategori baru tidak boleh kosong!");
-                  } else {
-                    Kategori kategori = Kategori(nama: _newKategori);
-                    await saveKategoriToDatabase(widget.type, kategori);
-                    Navigator.pop(context, _newKategori);
-                  }
-                },
-                child: Container(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      "Simpan",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontFamily: "Inter",
-                          color: Colors.black),
-                    )),
               ),
             ])),
           );

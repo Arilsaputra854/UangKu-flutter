@@ -151,6 +151,10 @@ class _login_pageState extends State<login_page> {
                                         margin: EdgeInsets.only(
                                             bottom: 10, top: 10),
                                         child: TextFormField(
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontFamily: "Inter",
+                                                color: Colors.black),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return "Please enter your Email.";
@@ -158,6 +162,12 @@ class _login_pageState extends State<login_page> {
                                             },
                                             controller: EmailController,
                                             decoration: InputDecoration(
+                                              focusedBorder: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(10)),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.black)),
                                               border: OutlineInputBorder(
                                                   borderRadius:
                                                       BorderRadius.all(
@@ -171,6 +181,10 @@ class _login_pageState extends State<login_page> {
                                       Container(
                                         margin: EdgeInsets.only(top: 10),
                                         child: TextFormField(
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontFamily: "Inter",
+                                                color: Colors.black),
                                             validator: (value) {
                                               if (value!.isEmpty) {
                                                 return "Please enter your password.";
@@ -179,6 +193,12 @@ class _login_pageState extends State<login_page> {
                                             obscureText: true,
                                             controller: PasswordController,
                                             decoration: InputDecoration(
+                                              focusedBorder: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(10)),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.black)),
                                               border: OutlineInputBorder(
                                                   borderRadius:
                                                       BorderRadius.all(

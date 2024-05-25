@@ -40,129 +40,138 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
 
     return Scaffold(
         body: Container(
-            constraints: BoxConstraints(maxWidth: 500),
             child: ListView(
-              children: [
-                Container(
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: 500,
-                        height: 230,
-                        child: SvgPicture.asset(
-                          "assets/img/bg.svg",
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 130),
-                        alignment: Alignment.center,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Saldo Anda",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: "Inter",
-                                    fontSize: 20),
-                              ),
-                              FutureBuilder(
-                                  future: getJumlahTotal(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return Text(
-                                        snapshot.data ?? "0",
-                                        style: TextStyle(
-                                            color: const Color.fromARGB(
-                                                255, 25, 13, 13),
-                                            fontFamily: "Inter",
-                                            fontSize: 40),
-                                      );
-                                    } else if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return CircularProgressIndicator();
-                                    } else {
-                                      return Text("Terjadi Kesalahan");
-                                    }
-                                  })
-                            ]),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 5, left: 10, right: 10),
-                        width: 500,
-                        height: 60,
-                        color: Colors.transparent,
-                        child: Row(
-                          children: [
-                            Container(
-                                margin: EdgeInsets.all(5),
-                                child: Text(
-                                  FirebaseAuth.instance.currentUser?.email ??
-                                      "No Signin",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: "Inter",
-                                      fontSize: 15),
-                                )),
-                            Spacer(),
-                            IconButton(
-                                onPressed: () async {
-                                  try {
-                                    bool delete = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                SettingPage()));
-                                    if (delete) {
-                                      setState(() {});
-
-                                      Fluttertoast.showToast(
-                                          msg: "Catatan dihapus!");
-                                    }
-                                  } catch (e) {
-                                    print(e);
-                                    setState(() {
-                                      Fluttertoast.showToast(
-                                          msg: "Terjadi Kesalahan.");
-                                    });
-                                  }
-                                },
-                                icon: Icon(
-                                  Icons.settings,
-                                  color: Colors.black,
-                                )),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+      children: [
+        Container(
+          child: Stack(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.width * 0.6,
+                child: SvgPicture.asset(
+                  "assets/img/bg.svg",
+                  fit: BoxFit.fill,
                 ),
-                buttonHeader(),
-                Container(
-                    margin: EdgeInsets.all(12),
-                    height: 40,
-                    child: TabBar(
-                        overlayColor:
-                            MaterialStateProperty.all(Colors.transparent),
-                        indicatorColor: Colors.transparent,
-                        indicatorPadding: EdgeInsets.only(left: 10, right: 10),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        indicator: BoxDecoration(
-                            color: Colors.yellow,
-                            borderRadius: BorderRadius.circular(20)),
-                        unselectedLabelColor: Colors.grey,
-                        controller: _tabcontroller,
-                        tabs: [Text("Pemasukan"), Text("Pengeluaran")])),
-                Container(
-                    height: 250,
-                    width: 500,
-                    margin: EdgeInsets.only(left: 10, right: 10),
-                    child: TabBarView(
-                        controller: _tabcontroller,
-                        children: [_tabPemasukan(), _tabPengeluaran()]))
-              ],
-            )));
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 130),
+                alignment: Alignment.center,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Saldo Anda",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: "Inter",
+                            fontSize: MediaQuery.of(context).size.width * 0.05),
+                      ),
+                      FutureBuilder(
+                          future: getJumlahTotal(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text(
+                                snapshot.data ?? "0",
+                                style: TextStyle(
+                                  color: const Color.fromARGB(255, 25, 13, 13),
+                                  fontFamily: "Inter",
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                ),
+                              );
+                            } else if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            } else {
+                              return Text("Terjadi Kesalahan");
+                            }
+                          })
+                    ]),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 5, left: 10, right: 10),
+                height: 60,
+                color: Colors.transparent,
+                child: Row(
+                  children: [
+                    Container(
+                        margin: EdgeInsets.all(5),
+                        child: Text(
+                          FirebaseAuth.instance.currentUser?.email ??
+                              "No Signin",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: "Inter",
+                              fontSize: 15),
+                        )),
+                    Spacer(),
+                    IconButton(
+                        onPressed: () async {
+                          try {
+                            bool delete = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SettingPage()));
+                            if (delete) {
+                              setState(() {});
+
+                              Fluttertoast.showToast(msg: "Catatan dihapus!");
+                            }
+                          } catch (e) {
+                            print(e);
+                            setState(() {
+                              Fluttertoast.showToast(msg: "Terjadi Kesalahan.");
+                            });
+                          }
+                        },
+                        icon: Icon(
+                          Icons.settings,
+                          color: Colors.black,
+                        )),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        buttonHeader(),
+        Container(
+            margin: EdgeInsets.all(12),
+            height: 40,
+            child: TabBar(
+                dividerColor: Colors.transparent,
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                indicatorColor: Colors.transparent,
+                indicatorPadding: EdgeInsets.only(left: 10, right: 10),
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicator: BoxDecoration(
+                    color: Colors.yellow,
+                    borderRadius: BorderRadius.circular(20)),
+                unselectedLabelColor: Colors.grey,
+                controller: _tabcontroller,
+                tabs: [
+                  Text(
+                    "Pemasukan",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: MediaQuery.of(context).size.width * 0.03),
+                  ),
+                  Text(
+                    "Pengeluaran",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: MediaQuery.of(context).size.width * 0.03),
+                  )
+                ])),
+        Container(
+            height: 250,
+            width: 500,
+            margin: EdgeInsets.only(left: 10, right: 10),
+            child: TabBarView(
+                controller: _tabcontroller,
+                children: [_tabPemasukan(), _tabPengeluaran()]))
+      ],
+    )));
   }
 
   Widget buttonHeader() {
@@ -285,41 +294,82 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                               }));
                             }
                           },
-                          child: Container(
-                            margin: EdgeInsets.only(
-                                left: 5, right: 5, top: 10, bottom: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      konversiKeIDR(
-                                          snapshot.data![index].jumlah),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Spacer(),
-                                    Text(konversiTimestamp(snapshot
-                                        .data![index].tanggal
-                                        .toString()))
-                                  ],
-                                ),
-                                Text(snapshot.data![index].kategori),
-                                Text(snapshot.data![index].catatan)
-                              ],
+                          child: Card(
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              margin: EdgeInsets.only(
+                                  left: 5, right: 5, top: 10, bottom: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        konversiKeIDR(
+                                            snapshot.data![index].jumlah),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.03),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        konversiTimestamp(snapshot
+                                            .data![index].tanggal
+                                            .toString()),
+                                        style: TextStyle(
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.03),
+                                      )
+                                    ],
+                                  ),
+                                  Text(
+                                    snapshot.data![index].kategori,
+                                    style: TextStyle(
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.03),
+                                  ),
+                                  Text(
+                                    snapshot.data![index].catatan,
+                                    style: TextStyle(
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.03),
+                                  )
+                                ],
+                              ),
                             ),
                           ));
                     }),
                   );
                 } else {
-                  return Center(child: Text("Tidak ada data"));
+                  return Center(
+                      child: Text(
+                    "Tidak ada data",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: "Inter", color: Colors.black),
+                  ));
                 }
               } else {
-                return Center(child: Text("Tidak ada data"));
+                return Center(
+                    child: Text(
+                  "Tidak ada data",
+                  style: TextStyle(
+                      fontSize: 15, fontFamily: "Inter", color: Colors.black),
+                ));
               }
             }))
-        : Center(child: Text("Gagal mengambil data. silakan login!"));
+        : Center(
+            child: Text(
+            "Gagal mengambil data. silakan login!",
+            style: TextStyle(
+                fontSize: 15, fontFamily: "Inter", color: Colors.black),
+          ));
   }
 
   _tabPengeluaran() {
@@ -372,7 +422,9 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                               }));
                             }
                           },
-                          child: Container(
+                          child: Card(
+                              child: Container(
+                            padding: EdgeInsets.all(10),
                             margin: EdgeInsets.only(
                                 left: 5, right: 5, top: 10, bottom: 10),
                             child: Column(
@@ -384,29 +436,67 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                                       konversiKeIDR(
                                           snapshot.data![index].jumlah),
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.03),
                                     ),
                                     Spacer(),
-                                    Text(konversiTimestamp(snapshot
-                                        .data![index].tanggal
-                                        .toString()))
+                                    Text(
+                                      konversiTimestamp(snapshot
+                                          .data![index].tanggal
+                                          .toString()),
+                                      style: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.03),
+                                    )
                                   ],
                                 ),
-                                Text(snapshot.data![index].kategori),
-                                Text(snapshot.data![index].catatan)
+                                Text(
+                                  snapshot.data![index].kategori,
+                                  style: TextStyle(
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.03),
+                                ),
+                                Text(
+                                  snapshot.data![index].catatan,
+                                  style: TextStyle(
+                                      fontSize:
+                                          MediaQuery.of(context).size.width *
+                                              0.03),
+                                )
                               ],
                             ),
-                          ));
+                          )));
                     }),
                   );
                 } else {
-                  return Center(child: Text("Tidak ada data"));
+                  return Center(
+                      child: Text(
+                    "Tidak ada data",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: "Inter", color: Colors.black),
+                  ));
                 }
               } else {
-                return Center(child: Text("Tidak ada data"));
+                return Center(
+                    child: Text(
+                  "Tidak ada data",
+                  style: TextStyle(
+                      fontSize: 15, fontFamily: "Inter", color: Colors.black),
+                ));
               }
             }))
-        : Center(child: Text("Gagal mengambil data. silakan login!"));
+        : Center(
+            child: Text(
+            "Gagal mengambil data. silakan login!",
+            style: TextStyle(
+                fontSize: 15, fontFamily: "Inter", color: Colors.black),
+          ));
   }
 
   _deleteRecord(int type, Record data) {
@@ -414,10 +504,27 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Text("Hapus Catatan?"),
+            actionsAlignment: MainAxisAlignment.spaceBetween,
+            content: Text(
+              "Hapus Catatan?",
+              style: TextStyle(
+                  fontSize: 15, fontFamily: "Inter", color: Colors.black),
+            ),
             actions: [
               ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   onPressed: () {
+                    Navigator.pop(
+                      context,
+                    );
+                  },
+                  child: Text(
+                    "Batal",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: "Inter", color: Colors.white),
+                  )),
+              ElevatedButton(
+                  onPressed: () async {
                     deleteRecordFromDatabase(
                         type == Type.TYPE_PEMASUKAN
                             ? Type.TYPE_PEMASUKAN
@@ -426,7 +533,13 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                     Navigator.pop(context);
                     setState(() {});
                   },
-                  child: Text("Hapus"))
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.yellow),
+                  child: Text(
+                    "Hapus",
+                    style: TextStyle(
+                        fontSize: 15, fontFamily: "Inter", color: Colors.black),
+                  )),
             ],
           );
         });
