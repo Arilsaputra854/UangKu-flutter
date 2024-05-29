@@ -34,6 +34,16 @@ class Record {
       catatan: json['catatan'],
       jumlah: (json['jumlah']),
       tanggal: (json['tanggal']));
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'kategori': kategori,
+      'catatan': catatan,
+      'jumlah': jumlah,
+      'tanggal': tanggal,
+    };
+  }
 }
 
 Future<bool> updateRecord(int type, Record record) async {

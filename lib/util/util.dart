@@ -25,6 +25,8 @@ String konversiTimestamp(String timestamp) {
 }
 
 void loadingUangku(BuildContext context) {
+  bool _isLoading = true;
+
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -45,5 +47,7 @@ void loadingUangku(BuildContext context) {
         ),
       );
     },
-  );
+  ).then((value) {
+    _isLoading = false;
+  });
 }
