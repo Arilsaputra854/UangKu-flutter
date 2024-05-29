@@ -1,16 +1,16 @@
-# uangku_pencatat_keuangan
+# UangKu - Aplikasi Pencatatan Pemasukan dan Pengeluaran untuk UMKM
 
-A new Flutter project.
+UangKu adalah aplikasi mobile yang dibangun menggunakan Flutter, dirancang khusus untuk membantu UMKM (Usaha Mikro, Kecil, dan Menengah) dalam mencatat pemasukan dan pengeluaran mereka dengan cara yang rapih dan efisien.
 
-## Getting Started
+## Fitur Utama
 
-This project is a starting point for a Flutter application.
+- **Pencatatan Pemasukan**: Pengguna dapat mencatat semua pemasukan yang diterima, termasuk dari penjualan produk atau layanan, pemasukan tambahan, dan lainnya.
+  
+- **Pencatatan Pengeluaran**: Pengguna dapat mencatat semua pengeluaran yang dibuat, seperti biaya produksi, pengeluaran operasional, pembayaran tagihan, dan sebagainya.
+  
+- **Kategori Transaksi**: Transaksi dapat dikategorikan untuk memudahkan pengguna dalam menganalisis dan melacak sumber pemasukan dan pengeluaran.
 
-A few resources to get you started if this is your first Flutter project:
+- **Grafik dan Laporan**: Aplikasi menyediakan grafik dan laporan yang mudah dipahami untuk melihat gambaran keseluruhan keuangan UMKM, termasuk perkembangan pemasukan dan pengeluaran dari waktu ke waktu. (upcoming)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Instalasi
+Download file APK.
