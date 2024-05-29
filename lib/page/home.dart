@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uangku_pencatat_keuangan/model/kategori.dart';
 import 'package:uangku_pencatat_keuangan/model/record.dart';
+import 'package:uangku_pencatat_keuangan/page/chart_page.dart';
 import 'package:uangku_pencatat_keuangan/page/login.dart';
 import 'package:uangku_pencatat_keuangan/page/setting.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
@@ -164,8 +165,8 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                   )
                 ])),
         Container(
-            height: 250,
-            width: 500,
+            height: MediaQuery.of(context).size.height * 0.43,
+            width: MediaQuery.of(context).size.width,
             margin: EdgeInsets.only(left: 10, right: 10),
             child: TabBarView(
                 controller: _tabcontroller,
@@ -230,7 +231,10 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
             )),
         InkWell(
             hoverColor: Colors.transparent,
-            onTap: () async {},
+            onTap: () async {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ChartPage()));
+            },
             child: Container(
               margin: EdgeInsets.all(10),
               width: 80,
@@ -425,8 +429,8 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                           child: Card(
                               child: Container(
                             padding: EdgeInsets.all(10),
-                            margin: EdgeInsets.only(
-                                left: 5, right: 5, top: 10, bottom: 10),
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
