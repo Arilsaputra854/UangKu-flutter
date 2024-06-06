@@ -1,12 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:uangku_pencatat_keuangan/firebase_options.dart';
 import 'package:uangku_pencatat_keuangan/page/splash_screen.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 
+FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+    new FlutterLocalNotificationsPlugin();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  UangkuNotification.initialize(_flutterLocalNotificationsPlugin);
 
   // TODO : setting option untuk mobile dan web
   await Firebase.initializeApp();

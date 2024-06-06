@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -50,4 +51,35 @@ void loadingUangku(BuildContext context) {
   ).then((value) {
     _isLoading = false;
   });
+}
+
+class UangkuNotification {
+  static Future initialize(
+      FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+    var androidInitialize =
+        new AndroidInitializationSettings('mipmap/ic_launcher');
+    var initializationSettings =
+        new InitializationSettings(android: androidInitialize);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  static Future showTextNotification(
+      {var id = 0,
+      required String title,
+      required String body,
+      var payload,
+      required FlutterLocalNotificationsPlugin fln}) async {
+    AndroidNotificationDetails _androidNotificationDetails =
+        new AndroidNotificationDetails("reminder", "reminder_channel",
+            playSound: true,
+            importance: Importance.max,
+            sound: RawResourceAndroidNotificationSound("uangku"),
+            priority: Priority.max);
+
+    var notification =
+        NotificationDetails(android: _androidNotificationDetails);
+
+    await fln.show(0, title, body, notification);
+  }
 }

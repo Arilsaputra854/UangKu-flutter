@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uangku_pencatat_keuangan/model/kategori.dart';
@@ -23,9 +24,15 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
 
   FirebaseFirestore? firestore;
 
+  FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      new FlutterLocalNotificationsPlugin();
+
   @override
   void initState() {
     _tabcontroller = TabController(length: 2, vsync: this);
+
+    UangkuNotification.showTextNotification(
+        title: "Reminder", body: "body", fln: _flutterLocalNotificationsPlugin);
     super.initState();
   }
 
