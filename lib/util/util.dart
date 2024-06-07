@@ -3,7 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class Type {
   static const int TYPE_PEMASUKAN = 1;
@@ -70,6 +71,11 @@ class UangkuNotification {
       required String body,
       var payload,
       required FlutterLocalNotificationsPlugin fln}) async {
+    tz.initializeTimeZones();
+
+    var now = tz.TZDateTime.now(tz.local);
+    var today = tz.TZDateTime(now.location, now.year, now.month, now.day, 24);
+
     AndroidNotificationDetails _androidNotificationDetails =
         AndroidNotificationDetails(
             "channel_id_reminder_uangku", "reminder_channel",
@@ -82,6 +88,49 @@ class UangkuNotification {
     var notification =
         NotificationDetails(android: _androidNotificationDetails);
 
-    await fln.show(0, title, body, notification);
+    await fln.zonedSchedule(id, title, body, today, notification,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime);
+  }
+
+  static Future showScheduleTextNotification(
+      {var id = 1,
+      required String title,
+      required String body,
+      var payload,
+      required FlutterLocalNotificationsPlugin fln}) async {
+    await fln.zonedSchedule(
+        id,
+        'scheduled title',
+        'scheduled body',
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                'channel_id_reminder_uangku', 'reminder_channel',
+                channelDescription: 'your channel description')),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime);
   }
 }
+
+
+
+// AndroidNotificationDetails _androidNotificationDetails =
+    //     AndroidNotificationDetails("channel_id_reminder_scheduled_uangku",
+    //         "scheduled_reminder_channel",
+    //         playSound: true,
+    //         importance: Importance.high,
+    //         sound: RawResourceAndroidNotificationSound(
+    //             "uangku.mp3".split(".").first),
+    //         priority: Priority.high);
+
+    // var notification =
+    //     NotificationDetails(android: _androidNotificationDetails);
+
+    // await fln.zonedSchedule(id, title, body,
+    //     tz.TZDateTime.now(tz.local).add(Duration(seconds: 5)), notification,
+    //     uiLocalNotificationDateInterpretation:
+    //         UILocalNotificationDateInterpretation.absoluteTime,
+    //     payload: payload);
