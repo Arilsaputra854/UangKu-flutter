@@ -25,7 +25,7 @@
               />
               <meta-data
               android:name="com.google.firebase.messaging.default_notification_channel_id"
-              android:value="reminder"
+              android:value="channel_id_reminder_uangku"
               />
                 <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK"/>

@@ -32,7 +32,9 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
     _tabcontroller = TabController(length: 2, vsync: this);
 
     UangkuNotification.showTextNotification(
-        title: "Reminder", body: "body", fln: _flutterLocalNotificationsPlugin);
+        title: "Halo ${FirebaseAuth.instance.currentUser?.email ?? ""}",
+        body: "Jangan lupa isi catatan kamu ya!!",
+        fln: _flutterLocalNotificationsPlugin);
     super.initState();
   }
 

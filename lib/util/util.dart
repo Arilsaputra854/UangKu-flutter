@@ -71,11 +71,13 @@ class UangkuNotification {
       var payload,
       required FlutterLocalNotificationsPlugin fln}) async {
     AndroidNotificationDetails _androidNotificationDetails =
-        new AndroidNotificationDetails("reminder", "reminder_channel",
+        AndroidNotificationDetails(
+            "channel_id_reminder_uangku", "reminder_channel",
             playSound: true,
-            importance: Importance.max,
-            sound: RawResourceAndroidNotificationSound("uangku"),
-            priority: Priority.max);
+            importance: Importance.high,
+            sound: RawResourceAndroidNotificationSound(
+                "uangku.mp3".split(".").first),
+            priority: Priority.high);
 
     var notification =
         NotificationDetails(android: _androidNotificationDetails);
