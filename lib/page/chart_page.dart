@@ -78,11 +78,7 @@ class _ChartPageState extends State<ChartPage> {
                                 chartValuesOptions: ChartValuesOptions(
                                     showChartValuesInPercentage: true),
                                 dataMap: dataMapPemasukan,
-                                colorList: [
-                                  Colors.greenAccent,
-                                  Colors.yellow,
-                                  Color.fromARGB(255, 59, 186, 255),
-                                ],
+                                
                                 legendOptions: LegendOptions(
                                     showLegends: false,
                                     legendPosition: LegendPosition.bottom),
@@ -140,11 +136,7 @@ class _ChartPageState extends State<ChartPage> {
                                 chartValuesOptions: ChartValuesOptions(
                                     showChartValuesInPercentage: true),
                                 dataMap: dataMapPengeluaran,
-                                colorList: [
-                                  Colors.greenAccent,
-                                  Colors.yellow,
-                                  Color.fromARGB(255, 59, 186, 255),
-                                ],
+                                
                                 legendOptions: LegendOptions(
                                     showLegends: false,
                                     legendPosition: LegendPosition.bottom),

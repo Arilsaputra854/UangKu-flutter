@@ -74,7 +74,8 @@ class UangkuNotification {
     tz.initializeTimeZones();
 
     var now = tz.TZDateTime.now(tz.local);
-    var today = tz.TZDateTime(now.location, now.year, now.month, now.day, 24);
+    var today =
+        tz.TZDateTime(now.location, now.year, now.month, now.day, 23, 49);
 
     AndroidNotificationDetails _androidNotificationDetails =
         AndroidNotificationDetails(
@@ -90,6 +91,7 @@ class UangkuNotification {
 
     await fln.zonedSchedule(id, title, body, today, notification,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime);
   }
