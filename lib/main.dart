@@ -16,11 +16,12 @@ Future<void> main() async {
 
   // TODO : setting option untuk mobile dan web
   await Firebase.initializeApp(
-  options: FirebaseOptions(
-      apiKey: "AIzaSyAS_Rxf2csoFKuIoYVJ_dWdxhknGjFS3l4",
-      appId: "1:713929882960:web:24eb93a22221e4bf22c055",
-      messagingSenderId: "713929882960",
-      projectId: "uangku-application"));
+  // options: FirebaseOptions(
+  //     apiKey: "AIzaSyAS_Rxf2csoFKuIoYVJ_dWdxhknGjFS3l4",
+  //     appId: "1:713929882960:web:24eb93a22221e4bf22c055",
+  //     messagingSenderId: "713929882960",
+  //     projectId: "uangku-application")
+  );
   runApp(const MyApp());
 }
 
