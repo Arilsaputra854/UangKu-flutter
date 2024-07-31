@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uangku_pencatat_keuangan/model/kategori.dart';
@@ -23,9 +24,23 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
 
   FirebaseFirestore? firestore;
 
+  FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      new FlutterLocalNotificationsPlugin();
+
   @override
   void initState() {
     _tabcontroller = TabController(length: 2, vsync: this);
+
+    // UangkuNotification.showTextNotification(
+    //     title: "Halo ${FirebaseAuth.instance.currentUser?.email ?? ""}",
+    //     body: "Jangan lupa isi catatan kamu ya!!",
+    //     fln: _flutterLocalNotificationsPlugin);
+
+    UangkuNotification.showTextNotification(
+        title: "Halo ${FirebaseAuth.instance.currentUser?.email ?? ""}",
+        body: "Bingung uang kamu habis mulu?? catat yaa!",
+        fln: _flutterLocalNotificationsPlugin);
+
     super.initState();
   }
 
@@ -164,88 +179,83 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                         fontSize: MediaQuery.of(context).size.width * 0.03),
                   )
                 ])),
+        sortButton(),
         Container(
             height: MediaQuery.of(context).size.height * 0.43,
             width: MediaQuery.of(context).size.width,
             margin: EdgeInsets.only(left: 10, right: 10),
             child: TabBarView(
                 controller: _tabcontroller,
-                children: [_tabPemasukan(), _tabPengeluaran()]))
+                children: [_tabPemasukan(), _tabPengeluaran()])),
       ],
     )));
   }
 
   Widget buttonHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        InkWell(
-            hoverColor: Colors.transparent,
-            onTap: () async {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      InkWell(
+          hoverColor: Colors.transparent,
+          onTap: () async {
+            bool result = false;
+            result = await Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+              return FormMoneyScreen(Type.TYPE_PEMASUKAN);
+            }));
+            try {
+              if (result) {
+                setState(() {});
+              }
+            } catch (e) {
+              print("Canceled");
+            }
+          },
+          child: Container(
+            margin: EdgeInsets.all(10),
+            width: 80,
+            height: 80,
+            child: Image.asset("assets/img/icon_money_in.png"),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10), color: Colors.yellow),
+          )),
+      InkWell(
+          hoverColor: Colors.transparent,
+          onTap: () async {
+            try {
               bool result = false;
               result = await Navigator.push(context,
                   MaterialPageRoute(builder: (context) {
-                return FormMoneyScreen(Type.TYPE_PEMASUKAN);
+                return FormMoneyScreen(Type.TYPE_PENGELUARAN);
               }));
-              try {
-                if (result) {
-                  setState(() {});
-                }
-              } catch (e) {
-                print("Canceled");
+              if (result) {
+                setState(() {});
               }
-            },
-            child: Container(
-              margin: EdgeInsets.all(10),
-              width: 80,
-              height: 80,
-              child: Image.asset("assets/img/icon_money_in.png"),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.yellow),
-            )),
-        InkWell(
-            hoverColor: Colors.transparent,
-            onTap: () async {
-              try {
-                bool result = false;
-                result = await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                  return FormMoneyScreen(Type.TYPE_PENGELUARAN);
-                }));
-                if (result) {
-                  setState(() {});
-                }
-              } catch (e) {
-                print("Canceled");
-              }
-            },
-            child: Container(
-              margin: EdgeInsets.all(10),
-              width: 80,
-              height: 80,
-              child: Image.asset("assets/img/icon_money_out.png"),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.yellow),
-            )),
-        InkWell(
-            hoverColor: Colors.transparent,
-            onTap: () async {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ChartPage()));
-            },
-            child: Container(
-              margin: EdgeInsets.all(10),
-              width: 80,
-              height: 80,
-              child: Image.asset("assets/img/icon_graphic.png"),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.yellow),
-            )),
-      ],
-    );
+            } catch (e) {
+              print("Canceled");
+            }
+          },
+          child: Container(
+            margin: EdgeInsets.all(10),
+            width: 80,
+            height: 80,
+            child: Image.asset("assets/img/icon_money_out.png"),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10), color: Colors.yellow),
+          )),
+      InkWell(
+          hoverColor: Colors.transparent,
+          onTap: () async {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => ChartPage()));
+          },
+          child: Container(
+            margin: EdgeInsets.all(10),
+            width: 80,
+            height: 80,
+            child: Image.asset("assets/img/icon_graphic.png"),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10), color: Colors.yellow),
+          )),
+    ]);
   }
 
   _tabPemasukan() {
@@ -547,6 +557,15 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
             ],
           );
         });
+  }
+  
+  sortButton() {
+    return Container(
+          margin: EdgeInsets.all(10),
+          child: Row(
+            children: [ElevatedButton(onPressed: () {}, child: Text("Urut"))],
+          ),
+        );
   }
 }
 
