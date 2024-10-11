@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -29,24 +28,26 @@ class _ChartPageState extends State<ChartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title: Text("Grafik Keuangan",
-              style: TextStyle(
-                  fontSize: 20, fontFamily: "Inter", color: Colors.black)),
-          backgroundColor: Colors.transparent,
-          leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-            ),
+      appBar: AppBar(
+        
+        elevation: 0,
+        title: Text("Grafik Keuangan",
+            style: TextStyle(
+                fontSize: 20, fontFamily: "Inter", color: Colors.black)),
+        backgroundColor: Colors.transparent,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
           ),
         ),
-        body: CarouselSlider(
-          items: [
+      ),
+      body: DefaultTabController(
+          length: 2,
+          child: TabBarView(children: [
             Column(
               children: [
                 Container(
@@ -78,7 +79,6 @@ class _ChartPageState extends State<ChartPage> {
                                 chartValuesOptions: ChartValuesOptions(
                                     showChartValuesInPercentage: true),
                                 dataMap: dataMapPemasukan,
-                                
                                 legendOptions: LegendOptions(
                                     showLegends: false,
                                     legendPosition: LegendPosition.bottom),
@@ -97,7 +97,7 @@ class _ChartPageState extends State<ChartPage> {
                           }
                         }))),
                 Text(
-                  "Catatan",
+                  "Catatan Pemasukan",
                   style: TextStyle(
                       fontSize: 15, fontFamily: "Inter", color: Colors.black),
                 ),
@@ -136,7 +136,6 @@ class _ChartPageState extends State<ChartPage> {
                                 chartValuesOptions: ChartValuesOptions(
                                     showChartValuesInPercentage: true),
                                 dataMap: dataMapPengeluaran,
-                                
                                 legendOptions: LegendOptions(
                                     showLegends: false,
                                     legendPosition: LegendPosition.bottom),
@@ -155,23 +154,15 @@ class _ChartPageState extends State<ChartPage> {
                           }
                         }))),
                 Text(
-                  "Catatan",
+                  "Catatan Pengeluaran",
                   style: TextStyle(
                       fontSize: 15, fontFamily: "Inter", color: Colors.black),
                 ),
                 _tabPengeluaran()
               ],
             )
-          ],
-          options: CarouselOptions(
-              onPageChanged: (index, reason) {
-                setState(() {});
-              },
-              autoPlay: false,
-              viewportFraction: 1.0,
-              enlargeCenterPage: false,
-              height: MediaQuery.of(context).size.height),
-        ));
+          ])),
+    );
   }
 
   _tabPengeluaran() {

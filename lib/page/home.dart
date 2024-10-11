@@ -284,7 +284,6 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                   //group by date
                   for(var record in snapshot.data!){
                     String dateKey = konversiTimestamp(record.tanggal.toString());
-                    print(dateKey);
                     if(groupedRecord.containsKey(dateKey)){
                       groupedRecord[dateKey]!.add(record);
                     }else{
@@ -292,93 +291,7 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
 
                     }
                   } 
-
-                  // //loading data
-                  // return ListView.builder(
-                  //   itemCount: snapshot.data?.length,
-                  //   itemBuilder: ((context, index) {
-                  //     return InkWell(
-                  //         onLongPress: () {
-                  //           _deleteRecord(
-                  //               Type.TYPE_PEMASUKAN, snapshot.data![index]);
-                  //         },
-                  //         onTap: () async {
-                  //           if (snapshot.data != null &&
-                  //               snapshot.data?[index] != null) {
-                  //             try {
-                  //               bool result = false;
-                  //               result = await Navigator.push(context,
-                  //                   MaterialPageRoute(builder: (context) {
-                  //                 return FormMoneyScreen(Type.TYPE_PEMASUKAN,
-                  //                     snapshot.data?[index]);
-                  //               }));
-                  //               if (result) {
-                  //                 setState(() {});
-                  //               }
-                  //             } catch (e) {
-                  //               print("Canceled");
-                  //             }
-                  //           } else {
-                  //             Navigator.push(context,
-                  //                 MaterialPageRoute(builder: (context) {
-                  //               return FormMoneyScreen(Type.TYPE_PEMASUKAN);
-                  //             }));
-                  //           }
-                  //         },
-                  //         child: Card(
-                  //           child: Container(
-                  //             padding: EdgeInsets.all(10),
-                  //             margin: EdgeInsets.only(
-                  //                 left: 5, right: 5, top: 10, bottom: 10),
-                  //             child: Column(
-                  //               crossAxisAlignment: CrossAxisAlignment.start,
-                  //               children: [
-                  //                 Row(
-                  //                   children: [
-                  //                     Text(
-                  //                       konversiKeIDR(
-                  //                           snapshot.data![index].jumlah),
-                  //                       style: TextStyle(
-                  //                           fontWeight: FontWeight.bold,
-                  //                           fontSize: MediaQuery.of(context)
-                  //                                   .size
-                  //                                   .width *
-                  //                               0.03),
-                  //                     ),
-                  //                     Spacer(),
-                  //                     Text(
-                  //                       konversiTimestamp(snapshot
-                  //                           .data![index].tanggal
-                  //                           .toString()),
-                  //                       style: TextStyle(
-                  //                           fontSize: MediaQuery.of(context)
-                  //                                   .size
-                  //                                   .width *
-                  //                               0.03),
-                  //                     )
-                  //                   ],
-                  //                 ),
-                  //                 Text(
-                  //                   snapshot.data![index].kategori,
-                  //                   style: TextStyle(
-                  //                       fontSize:
-                  //                           MediaQuery.of(context).size.width *
-                  //                               0.03),
-                  //                 ),
-                  //                 Text(
-                  //                   snapshot.data![index].catatan,
-                  //                   style: TextStyle(
-                  //                       fontSize:
-                  //                           MediaQuery.of(context).size.width *
-                  //                               0.03),
-                  //                 )
-                  //               ],
-                  //             ),t
-                  //           ),
-                  //         ));
-                  //   }),
-                  // );
-
+                  
                   List<Widget> listItems=[];
                   groupedRecord.forEach((date, records){
                     listItems.add(Container(child: Center(child: Text(date),),));
@@ -420,7 +333,7 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                                       fontSize: MediaQuery.of(context).size.width * 0.03,
                                     ),
                                   ),
-                                ],
+                               ],
                               )));
                     }));
                   });
@@ -450,8 +363,9 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                 fontSize: 15, fontFamily: "Inter", color: Colors.black),
           ));
   }
+ _tabPengeluaran() {
+    Map<String,List<Record>> groupedRecord ={};
 
-  _tabPengeluaran() {
     return FirebaseAuth.instance.currentUser != null
         ? FutureBuilder(
             future: getRecordFromDatabase(Type.TYPE_PENGELUARAN),
@@ -469,90 +383,65 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                 return Text(snapshot.error.toString());
               } else if (snapshot.hasData) {
                 if (!snapshot.data!.isEmpty) {
-                  //loading data
-                  return ListView.builder(
-                    itemCount: snapshot.data?.length,
-                    itemBuilder: ((context, index) {
-                      return InkWell(
-                          onLongPress: () {
-                            _deleteRecord(
-                                Type.TYPE_PENGELUARAN, snapshot.data![index]);
-                          },
-                          onTap: () async {
-                            if (snapshot.data != null &&
-                                snapshot.data?[index] != null) {
-                              try {
-                                bool result = false;
-                                result = await Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return FormMoneyScreen(Type.TYPE_PENGELUARAN,
-                                      snapshot.data?[index]);
-                                }));
-                                if (result) {
-                                  setState(() {});
-                                }
-                              } catch (e) {
-                                print("Canceled");
-                              }
-                            } else {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return FormMoneyScreen(Type.TYPE_PENGELUARAN);
-                              }));
-                            }
-                          },
-                          child: Card(
-                              child: Container(
-                            padding: EdgeInsets.all(10),
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 5, vertical: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      konversiKeIDR(
-                                          snapshot.data![index].jumlah),
-                                      style: TextStyle(
+
+                  //group by date
+                  for(var record in snapshot.data!){
+                    String dateKey = konversiTimestamp(record.tanggal.toString());
+                    if(groupedRecord.containsKey(dateKey)){
+                      groupedRecord[dateKey]!.add(record);
+                    }else{
+                      groupedRecord[dateKey] = [record];
+
+                    }
+                  } 
+                  
+                  List<Widget> listItems=[];
+                  groupedRecord.forEach((date, records){
+                    listItems.add(Container(child: Center(child: Text(date),),));
+                    listItems.addAll(records.map((record){
+                      return Card(
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              margin: EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        konversiKeIDR(record.jumlah),
+                                        style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.03),
+                                          fontSize: MediaQuery.of(context).size.width * 0.03,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        date,
+                                        style: TextStyle(
+                                          fontSize: MediaQuery.of(context).size.width * 0.03,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    record.kategori,
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context).size.width * 0.03,
                                     ),
-                                    Spacer(),
-                                    Text(
-                                      konversiTimestamp(snapshot
-                                          .data![index].tanggal
-                                          .toString()),
-                                      style: TextStyle(
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.03),
-                                    )
-                                  ],
-                                ),
-                                Text(
-                                  snapshot.data![index].kategori,
-                                  style: TextStyle(
-                                      fontSize:
-                                          MediaQuery.of(context).size.width *
-                                              0.03),
-                                ),
-                                Text(
-                                  snapshot.data![index].catatan,
-                                  style: TextStyle(
-                                      fontSize:
-                                          MediaQuery.of(context).size.width *
-                                              0.03),
-                                )
-                              ],
-                            ),
-                          )));
-                    }),
-                  );
+                                  ),
+                                  Text(
+                                    record.catatan,
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context).size.width * 0.03,
+                                    ),
+                                  ),
+                               ],
+                              )));
+                    }));
+                  });
+
+                  return ListView(children: listItems,);
                 } else {
                   return Center(
                       child: Text(
@@ -577,7 +466,6 @@ class _HomeState extends State<HomeScreen> with SingleTickerProviderStateMixin {
                 fontSize: 15, fontFamily: "Inter", color: Colors.black),
           ));
   }
-
   _deleteRecord(int type, Record data) {
     showDialog(
         context: context,
