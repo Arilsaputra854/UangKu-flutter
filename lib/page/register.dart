@@ -6,8 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uangku_pencatat_keuangan/page/login.dart';
 import 'package:uangku_pencatat_keuangan/util/util.dart';
 
-import 'email_ver.dart';
-
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
