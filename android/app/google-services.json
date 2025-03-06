@@ -3,7 +3,7 @@
     "project_number": "713929882960",
     "firebase_url": "https://uangku-application-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "uangku-application",
-    "storage_bucket": "uangku-application.appspot.com"
+    "storage_bucket": "uangku-application.firebasestorage.app"
   },
   "client": [
     {
@@ -13,12 +13,7 @@
           "package_name": "com.arilsaputra854.uangku_pencatat_keuangan"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "713929882960-7vn6cgtrdtfbaqc5s23daag0a5cjljgv.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyBNdp1khckC7x_aH_dYeTunSUHHh75t_Bw"
@@ -26,12 +21,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "713929882960-7vn6cgtrdtfbaqc5s23daag0a5cjljgv.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
@@ -42,12 +32,7 @@
           "package_name": "com.example.uangku_pencatat_keuangan"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "713929882960-7vn6cgtrdtfbaqc5s23daag0a5cjljgv.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyBNdp1khckC7x_aH_dYeTunSUHHh75t_Bw"
@@ -55,12 +40,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "713929882960-7vn6cgtrdtfbaqc5s23daag0a5cjljgv.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

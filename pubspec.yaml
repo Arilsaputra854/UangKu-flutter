@@ -31,21 +31,25 @@ dependencies:
     sdk: flutter
 
   flutter_svg: any
-  fluttertoast: ^8.1.1
-  cupertino_icons: ^1.0.2
-  firebase_core: ^2.12.0
-  firebase_auth: ^4.1.0
+  fluttertoast: any
+  cupertino_icons: any
+  firebase_core: any
+  firebase_auth: any
   cloud_firestore: any
-  shared_preferences: ^2.2.3
-  intl: ^0.19.0
-  table_calendar: ^3.1.1
-  uuid: ^4.4.0
+  shared_preferences: any
+  intl: any
+  table_calendar: any
+  uuid: any
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^1.0.0
+
+dependency_overrides:
+  win32: 5.4.0
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
